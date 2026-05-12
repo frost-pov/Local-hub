@@ -1,0 +1,28 @@
+Local Hub — repository layout
+==============================
+
+/css/
+  style.css            Entry: imports design-system + local-hub-bridge
+  design-system.css    Tokens, components, page patterns
+  local-hub-bridge.css App-specific overrides (preview strip, toasts, vendor shell)
+  animations.css     Reveal / motion utilities
+
+/js/
+  core/                App shell: config, Supabase client, auth guards, utils
+  ui/                  Shared UI: partial loader, cart, preview chrome
+  pages/               One entry module per HTML page / flow (home, checkout, …)
+  data/                Static demo catalog (optional with placeholder mode)
+
+/partials/             HTML fragments loaded via fetch (nav, footer)
+
+/supabase/             schema.sql, rls.sql, Edge Functions (backend)
+
+/blueprints/           Non-production HTML reference (interactive diagrams)
+
+/assets/images/        Put uploaded or bundled images here (optional)
+
+/admin/                Super-admin HTML
+/vendor-admin/         Vendor dashboard HTML
+/auth/                 Login + OAuth callback
+
+Root *.html            Public storefront (index, vendor, checkout, …)

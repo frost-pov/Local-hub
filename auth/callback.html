@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="localhub-root" content=".." />
+  <script>
+    (function () {
+      var m = document.querySelector('meta[name="localhub-root"]');
+      var seg = (m && m.getAttribute('content') || '.').trim() || '.';
+      var rootUrl = new URL(seg.replace(/\/?$/, '/'), document.location.href).href;
+      var b = document.createElement('base');
+      b.href = rootUrl;
+      var anchor = document.querySelector('meta[name="localhub-root"]');
+      if (anchor) anchor.insertAdjacentElement('afterend', b);
+      else document.head.appendChild(b);
+    })();
+  </script>
+  <title>Signing you in…</title>
+  <script>
+    window.__SOKO = window.__SOKO || {
+      supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
+      supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY'
+    };
+  </script>
+</head>
+<body style="background:#0a0a0a;color:#f5f5f0;font-family:system-ui;margin:0;padding:2rem">
+  <p>Finishing sign-in…</p>
+  <script type="module">
+    import { supabase } from '../js/core/supabase.js';
+    import { normalizeNextUrl } from '../js/core/paths.js';
+    const params = new URLSearchParams(location.search);
+    const raw = params.get('next') || '';
+    try {
+      if (location.search.includes('code=')) {
+        await supabase.auth.exchangeCodeForSession(location.href);
+      } else {
+        await supabase.auth.getSession();
+      }
+    } catch (e) {
+      console.warn(e);
+    }
+    window.location.replace(normalizeNextUrl(raw));
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="localhub-root" content=".." />
+  <script>
+    (function () {
+      var m = document.querySelector('meta[name="localhub-root"]');
+      var seg = (m && m.getAttribute('content') || '.').trim() || '.';
+      var rootUrl = new URL(seg.replace(/\/?$/, '/'), document.location.href).href;
+      var b = document.createElement('base');
+      b.href = rootUrl;
+      var anchor = document.querySelector('meta[name="localhub-root"]');
+      if (anchor) anchor.insertAdjacentElement('afterend', b);
+      else document.head.appendChild(b);
+    })();
+  </script>
+  <title>Admin · Orders</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script>
+    window.__LOCALHUB = window.__LOCALHUB || {
+      supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
+      supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY'
+    };
+    window.__SOKO = window.__LOCALHUB;
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <a class="brand" href="admin/index.html">Local Hub Admin</a>
+      <div class="nav-links">
+        <a href="admin/index.html">Dashboard</a>
+        <a href="admin/monitoring.html">Monitoring</a>
+        <a href="admin/vendors.html">Vendors</a>
+        <a href="admin/orders.html">Orders</a>
+        <a href="admin/payouts.html">Payouts</a>
+        <a href="admin/settings.html">Settings</a>
+        <a href="index.html" class="text-secondary">Site</a>
+      </div>
+    </nav>
+  </header>
+  <main class="site-wrap page-main">
+    <h1 class="section-title">Orders</h1>
+    <p class="text-secondary">Filter by status + vendor; show M-Pesa receipts when `mpesa_transactions` is populated.</p>
+  </main>
+  <script type="module">
+    import { bootAdminOrders } from '../js/pages/admin.js';
+    bootAdminOrders().catch(console.error);
+  </script>
+</body>
+</html>

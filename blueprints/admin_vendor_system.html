@@ -1,0 +1,247 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 1.5rem 0; font-family: var(--font-sans, sans-serif); }
+.section-label {
+  font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--color-text-tertiary); margin-bottom: 10px;
+}
+.row { display: flex; gap: 10px; margin-bottom: 10px; }
+.card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 14px 16px; flex: 1; min-width: 0;
+  cursor: pointer; transition: border-color 0.15s, background 0.15s;
+}
+.card:hover { border-color: var(--color-border-primary); background: var(--color-background-secondary); }
+.card.you { border-color: var(--color-border-info); border-width: 1px; }
+.card-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 5px; display: flex; align-items: center; gap: 7px; }
+.card-title i { font-size: 15px; color: var(--color-text-secondary); }
+.card-sub { font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; }
+.badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+.badge-you { background: var(--color-background-info); color: var(--color-text-info); }
+.badge-vendor { background: var(--color-background-success); color: var(--color-text-success); }
+.badge-lock { background: var(--color-background-warning); color: var(--color-text-warning); }
+.divider { height: 0.5px; background: var(--color-border-tertiary); margin: 18px 0; }
+.permission-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary);
+  font-size: 13px;
+}
+.permission-row:last-child { border-bottom: none; }
+.perm-label { flex: 1; color: var(--color-text-primary); }
+.perm-you { width: 80px; text-align: center; }
+.perm-vendor { width: 80px; text-align: center; }
+.check { color: var(--color-text-success); font-size: 15px; }
+.cross { color: var(--color-text-danger); font-size: 15px; }
+.partial { color: var(--color-text-warning); font-size: 13px; font-weight: 500; }
+.col-head { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; }
+
+.calc-box {
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 16px;
+}
+.calc-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.calc-label { font-size: 13px; color: var(--color-text-secondary); width: 120px; flex-shrink: 0; }
+.calc-input {
+  flex: 1; padding: 8px 12px; border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-primary);
+  font-size: 14px; font-weight: 500; color: var(--color-text-primary);
+  font-family: var(--font-sans, sans-serif);
+}
+.calc-input:focus { outline: none; border-color: var(--color-border-info); }
+.split-row { display: flex; gap: 10px; margin-top: 4px; }
+.split-card {
+  flex: 1; border-radius: var(--border-radius-md);
+  padding: 12px 14px; text-align: center;
+}
+.split-card.yours { background: var(--color-background-info); }
+.split-card.theirs { background: var(--color-background-success); }
+.split-amount { font-size: 20px; font-weight: 500; }
+.split-yours .split-amount { color: var(--color-text-info); }
+.split-theirs .split-amount { color: var(--color-text-success); }
+.split-label { font-size: 11px; margin-top: 2px; }
+.split-yours .split-label { color: var(--color-text-info); }
+.split-theirs .split-label { color: var(--color-text-success); }
+.split-yours { background: var(--color-background-info); }
+.split-theirs { background: var(--color-background-success); }
+
+.contract-item {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 8px 0; border-bottom: 0.5px solid var(--color-border-tertiary);
+  font-size: 13px;
+}
+.contract-item:last-child { border-bottom: none; }
+.contract-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 500; color: var(--color-text-secondary);
+  flex-shrink: 0; margin-top: 1px;
+}
+.contract-text { flex: 1; color: var(--color-text-primary); line-height: 1.5; }
+.contract-text span { color: var(--color-text-secondary); font-size: 12px; display: block; }
+</style>
+
+<div class="wrap">
+
+<p class="section-label">Access levels</p>
+<div class="row">
+  <div class="card you" onclick="sendPrompt('What should the super admin panel include?')">
+    <div class="card-title"><i class="ti ti-shield-check" aria-hidden="true"></i> Super Admin (you) <span class="badge badge-you">Full control</span></div>
+    <div class="card-sub">Approve/reject vendors · Set commission rates · Override any product/price · View all orders & payouts · Delete vendors · See all revenue · Manage contracts</div>
+  </div>
+  <div class="card" onclick="sendPrompt('What can vendors edit in their mini admin panel?')">
+    <div class="card-title"><i class="ti ti-user" aria-hidden="true"></i> Vendor (mini admin) <span class="badge badge-vendor">Limited</span></div>
+    <div class="card-sub">Edit their own description · Update hours · Edit their story · Add/edit/delete their products · Set prices (you see the cut live) · Toggle online/offline</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<p class="section-label">Permission matrix</p>
+<div class="card" style="cursor:default; padding: 12px 16px;">
+  <div class="permission-row">
+    <div class="perm-label" style="font-weight:500"></div>
+    <div class="perm-you col-head" style="width:90px">You</div>
+    <div class="perm-vendor col-head" style="width:90px">Vendor</div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">Edit store description</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">Edit store hours & story</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">Add / edit products</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">Set product prices</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><span class="partial">✓ sees cut live</span></div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">Override / change commission %</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><i class="ti ti-x cross"></i></div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">Approve vendor sign-ups</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><i class="ti ti-x cross"></i></div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">View all orders (platform-wide)</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><i class="ti ti-x cross"></i></div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">View own orders only</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">Delete any vendor / listing</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><i class="ti ti-x cross"></i></div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">Upload banner / logo</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">Toggle store online/offline</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+  </div>
+  <div class="permission-row">
+    <div class="perm-label">Sign / view contract</div>
+    <div class="perm-you" style="width:90px;text-align:center"><i class="ti ti-check check"></i></div>
+    <div class="perm-vendor" style="width:90px;text-align:center"><span class="partial">✓ sign only</span></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<p class="section-label">Live price calculator — what vendors see when they type a price</p>
+<div class="calc-box">
+  <div class="calc-row">
+    <div class="calc-label">Product price (Ksh)</div>
+    <input class="calc-input" type="number" id="price-input" placeholder="e.g. 2500" oninput="calcSplit()">
+  </div>
+  <div class="calc-row" style="margin-bottom:0">
+    <div class="calc-label">Commission rate</div>
+    <input class="calc-input" type="number" id="rate-input" value="10" min="1" max="50" oninput="calcSplit()">
+  </div>
+  <div id="split-result" style="display:none; margin-top:14px">
+    <div class="split-row">
+      <div class="split-card split-yours">
+        <div class="split-amount" id="your-cut" style="color: var(--color-text-info)">—</div>
+        <div class="split-label" style="color: var(--color-text-info)">Platform cut</div>
+      </div>
+      <div class="split-card split-theirs">
+        <div class="split-amount" id="their-cut" style="color: var(--color-text-success)">—</div>
+        <div class="split-label" style="color: var(--color-text-success)">Vendor earns</div>
+      </div>
+    </div>
+    <p style="font-size:11px; color:var(--color-text-tertiary); margin-top:10px; text-align:center">This is what vendors see in real-time as they type — no surprises at payout.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<p class="section-label">Mini contract — key clauses to include</p>
+<div class="card" style="cursor:default">
+  <div class="contract-item">
+    <div class="contract-num">1</div>
+    <div class="contract-text">Platform commission is <strong>10%</strong> of every completed order, deducted automatically before payout. <span>Vendor agrees this is non-negotiable at sign-up.</span></div>
+  </div>
+  <div class="contract-item">
+    <div class="contract-num">2</div>
+    <div class="contract-text">All payments go through the platform's M-Pesa account. Vendor may not accept direct payment from customers for orders placed on the platform. <span>This is the lock-in clause. Critical.</span></div>
+  </div>
+  <div class="contract-item">
+    <div class="contract-num">3</div>
+    <div class="contract-text">Vendor payouts processed weekly every Friday via M-Pesa B2C. <span>Set clear expectations to avoid WhatsApp complaints.</span></div>
+  </div>
+  <div class="contract-item">
+    <div class="contract-num">4</div>
+    <div class="contract-text">Vendor is responsible for product quality and accurate descriptions. Refunds due to misrepresentation come from the vendor's payout. <span>Protects you from absorbing return costs.</span></div>
+  </div>
+  <div class="contract-item">
+    <div class="contract-num">5</div>
+    <div class="contract-text">Platform reserves the right to remove listings or suspend a vendor account for policy violations. <span>Gives you the authority to enforce quality.</span></div>
+  </div>
+  <div class="contract-item">
+    <div class="contract-num">6</div>
+    <div class="contract-text">Vendor grants the platform a non-exclusive license to use their product images and brand name for marketing. <span>Lets you run ads/posts featuring their products without asking every time.</span></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function calcSplit() {
+  const price = parseFloat(document.getElementById('price-input').value);
+  const rate = parseFloat(document.getElementById('rate-input').value);
+  const result = document.getElementById('split-result');
+  if (!price || price <= 0 || !rate) { result.style.display = 'none'; return; }
+  const cut = Math.round(price * (rate / 100));
+  const earn = Math.round(price - cut);
+  document.getElementById('your-cut').textContent = 'Ksh ' + cut.toLocaleString();
+  document.getElementById('their-cut').textContent = 'Ksh ' + earn.toLocaleString();
+  result.style.display = 'block';
+}
+</script>

@@ -1,0 +1,371 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans, sans-serif); }
+
+.blueprint { padding: 1.5rem 0; }
+
+.section-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  margin-bottom: 10px;
+}
+
+.phase-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+.card:hover { border-color: var(--color-border-primary); background: var(--color-background-secondary); }
+
+.card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card-title i { font-size: 15px; color: var(--color-text-secondary); }
+
+.card-sub {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.badge-go { background: var(--color-background-success); color: var(--color-text-success); }
+.badge-later { background: var(--color-background-warning); color: var(--color-text-warning); }
+.badge-skip { background: var(--color-background-danger); color: var(--color-text-danger); }
+.badge-info { background: var(--color-background-info); color: var(--color-text-info); }
+
+.flow-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-tertiary);
+  font-size: 16px;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+.divider {
+  height: 0.5px;
+  background: var(--color-border-tertiary);
+  margin: 20px 0;
+}
+
+.full { flex: 1; }
+.half { flex: 1; min-width: 0; }
+.third { flex: 1; min-width: 0; }
+
+.url-pill {
+  display: inline-block;
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: 4px;
+  padding: 2px 7px;
+  color: var(--color-text-secondary);
+  margin-top: 5px;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.tag {
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: 4px;
+  padding: 2px 7px;
+  color: var(--color-text-secondary);
+}
+
+.money-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.money-highlight {
+  font-weight: 500;
+  color: var(--color-text-success);
+  font-size: 13px;
+}
+
+.step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.step-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+}
+.step-row:last-child { border-bottom: none; }
+.step-content { flex: 1; }
+.step-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.step-desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+
+.featured { border-color: var(--color-border-info) !important; border-width: 1px !important; }
+</style>
+
+<div class="blueprint">
+
+  <p class="section-label">System overview — money flow</p>
+  <div class="phase-row" style="align-items:center">
+    <div class="card third" style="text-align:center">
+      <div class="card-title" style="justify-content:center"><i class="ti ti-device-mobile" aria-hidden="true"></i> Customer</div>
+      <div class="card-sub">Browses, orders, pays via M-Pesa</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="card third featured" style="text-align:center">
+      <div class="card-title" style="justify-content:center"><i class="ti ti-building-store" aria-hidden="true"></i> Your Platform</div>
+      <div class="card-sub">Receives full payment, holds it</div>
+      <div class="money-row" style="justify-content:center"><span class="money-highlight">You own the checkout. Always.</span></div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="card third" style="text-align:center">
+      <div class="card-title" style="justify-content:center"><i class="ti ti-shirt" aria-hidden="true"></i> Vendor</div>
+      <div class="card-sub">Gets payout weekly, minus your cut</div>
+      <div class="money-row" style="justify-content:center"><span class="badge badge-go">−8–15% commission</span></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="section-label">Pages to build (V1)</p>
+  <div class="phase-row">
+    <div class="card half" onclick="sendPrompt('Walk me through building index.html for the marketplace')">
+      <div class="card-title"><i class="ti ti-home" aria-hidden="true"></i> index.html <span class="badge badge-go">Build first</span></div>
+      <div class="card-sub">Main landing — search, featured vendors, category nav</div>
+      <div class="url-pill">yourplatform.co.ke/</div>
+    </div>
+    <div class="card half" onclick="sendPrompt('Walk me through building the vendor storefront page')">
+      <div class="card-title"><i class="ti ti-building-store" aria-hidden="true"></i> vendor.html <span class="badge badge-go">Core</span></div>
+      <div class="card-sub">Dynamic storefront — loads from Supabase by slug</div>
+      <div class="url-pill">yourplatform.co.ke/shop/vendor-slug</div>
+    </div>
+  </div>
+  <div class="phase-row">
+    <div class="card half" onclick="sendPrompt('Walk me through the vendor onboarding form')">
+      <div class="card-title"><i class="ti ti-forms" aria-hidden="true"></i> onboarding.html <span class="badge badge-go">Build now</span></div>
+      <div class="card-sub">Vendor sign-up form → writes to Supabase vendors table</div>
+      <div class="url-pill">yourplatform.co.ke/join</div>
+    </div>
+    <div class="card half" onclick="sendPrompt('Walk me through the checkout and M-Pesa STK push flow')">
+      <div class="card-title"><i class="ti ti-credit-card" aria-hidden="true"></i> checkout.html <span class="badge badge-go">Core</span></div>
+      <div class="card-sub">Cart review → delivery address → M-Pesa STK push</div>
+      <div class="url-pill">yourplatform.co.ke/checkout</div>
+    </div>
+  </div>
+  <div class="phase-row">
+    <div class="card half" onclick="sendPrompt('What should the admin dashboard include at MVP stage?')">
+      <div class="card-title"><i class="ti ti-dashboard" aria-hidden="true"></i> admin.html <span class="badge badge-later">Phase 2</span></div>
+      <div class="card-sub">Orders list, vendor management, payout tracking</div>
+      <div class="url-pill">yourplatform.co.ke/admin</div>
+    </div>
+    <div class="card half" onclick="sendPrompt('How do I build the vendor dashboard?')">
+      <div class="card-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> dashboard.html <span class="badge badge-later">Phase 2</span></div>
+      <div class="card-sub">Vendor sees their orders, products, earnings</div>
+      <div class="url-pill">yourplatform.co.ke/vendor/dashboard</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="section-label">Tech stack — what to actually use</p>
+  <div class="phase-row">
+    <div class="card third" onclick="sendPrompt('How do I set up Supabase for this marketplace?')">
+      <div class="card-title"><i class="ti ti-database" aria-hidden="true"></i> Backend</div>
+      <div class="tag-row">
+        <span class="tag">Supabase</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">Auth</span>
+        <span class="tag">Edge Functions</span>
+      </div>
+      <div class="card-sub" style="margin-top:8px">No custom Node/Express at V1. Supabase handles everything.</div>
+    </div>
+    <div class="card third" onclick="sendPrompt('How do I integrate M-Pesa Daraja STK push?')">
+      <div class="card-title"><i class="ti ti-currency-dollar" aria-hidden="true"></i> Payments</div>
+      <div class="tag-row">
+        <span class="tag">Daraja API</span>
+        <span class="tag">STK Push</span>
+        <span class="tag">M-Pesa B2C</span>
+      </div>
+      <div class="card-sub" style="margin-top:8px">STK Push for customer payments. B2C for vendor payouts later.</div>
+    </div>
+    <div class="card third" onclick="sendPrompt('What storage should I use for product images?')">
+      <div class="card-title"><i class="ti ti-photo" aria-hidden="true"></i> Storage & CDN</div>
+      <div class="tag-row">
+        <span class="tag">Supabase Storage</span>
+        <span class="tag">Cloudflare CDN</span>
+      </div>
+      <div class="card-sub" style="margin-top:8px">Start with Supabase Storage. Move to R2 when you scale.</div>
+    </div>
+  </div>
+  <div class="phase-row">
+    <div class="card third">
+      <div class="card-title"><i class="ti ti-code" aria-hidden="true"></i> Frontend</div>
+      <div class="tag-row">
+        <span class="tag">Vanilla HTML/CSS/JS</span>
+        <span class="tag">Vercel</span>
+      </div>
+      <div class="card-sub" style="margin-top:8px">You know this stack. Don't switch to React. Ship faster.</div>
+    </div>
+    <div class="card third">
+      <div class="card-title"><i class="ti ti-bell" aria-hidden="true"></i> Notifications</div>
+      <div class="tag-row">
+        <span class="tag">WhatsApp Business API</span>
+        <span class="tag">Manual fallback OK</span>
+      </div>
+      <div class="card-sub" style="margin-top:8px">Skip USSD and SMS for now. WhatsApp is what Nairobi uses.</div>
+    </div>
+    <div class="card third">
+      <div class="card-title"><i class="ti ti-map" aria-hidden="true"></i> Maps</div>
+      <div class="tag-row">
+        <span class="tag">Skip V1</span>
+        <span class="tag">Leaflet later</span>
+      </div>
+      <div class="card-sub" style="margin-top:8px">Delivery address = text field for now. Maps are Phase 2.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="section-label">How the dynamic vendor storefront works</p>
+  <div class="phase-row" style="align-items:center">
+    <div class="card" style="flex:0 0 auto; text-align:center; min-width:130px">
+      <div class="card-title" style="justify-content:center; font-size:12px"><i class="ti ti-link" aria-hidden="true"></i> URL slug</div>
+      <div class="url-pill">/shop/jk-fashion</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="card" style="flex:0 0 auto; text-align:center; min-width:140px">
+      <div class="card-title" style="justify-content:center; font-size:12px"><i class="ti ti-code" aria-hidden="true"></i> vendor.html reads slug</div>
+      <div class="card-sub" style="font-size:11px">URLSearchParams or path parsing</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="card" style="flex:0 0 auto; text-align:center; min-width:140px">
+      <div class="card-title" style="justify-content:center; font-size:12px"><i class="ti ti-database" aria-hidden="true"></i> Supabase query</div>
+      <div class="card-sub" style="font-size:11px">SELECT * FROM vendors WHERE slug = 'jk-fashion'</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="card" style="flex:0 0 auto; text-align:center; min-width:130px">
+      <div class="card-title" style="justify-content:center; font-size:12px"><i class="ti ti-building-store" aria-hidden="true"></i> Render storefront</div>
+      <div class="card-sub" style="font-size:11px">One template, infinite vendors</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <p class="section-label">Build order — don't skip steps</p>
+  <div class="card full">
+    <div class="step-row">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <div class="step-title">Set up Supabase — tables, auth, RLS policies</div>
+        <div class="step-desc">vendors, products, users, orders tables. Row-level security so vendors only see their own data.</div>
+      </div>
+      <span class="badge badge-go">Week 1</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <div class="step-title">Build onboarding.html — vendor sign-up form</div>
+        <div class="step-desc">Name, WhatsApp, area, product category, logo upload. Writes to Supabase. This gets you vendors.</div>
+      </div>
+      <span class="badge badge-go">Week 1</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <div class="step-title">Build vendor.html — dynamic storefront template</div>
+        <div class="step-desc">One page that renders any vendor by slug. Products grid, contact button, online/offline badge.</div>
+      </div>
+      <span class="badge badge-go">Week 2</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <div class="step-title">Build index.html — main marketplace landing</div>
+        <div class="step-desc">Vendor directory, search, categories. Links to each vendor's storefront.</div>
+      </div>
+      <span class="badge badge-go">Week 2</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <div class="step-title">Integrate M-Pesa STK Push via Supabase Edge Function</div>
+        <div class="step-desc">Customer taps pay → STK push to their phone → confirmation → order saved to Supabase.</div>
+      </div>
+      <span class="badge badge-go">Week 3</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num">6</div>
+      <div class="step-content">
+        <div class="step-title">Recruit 5–10 pilot vendors, go live on Vercel</div>
+        <div class="step-desc">Run commission-free for 2 weeks. Take real orders. Fix real problems.</div>
+      </div>
+      <span class="badge badge-go">Week 4</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num">7</div>
+      <div class="step-content">
+        <div class="step-title">Vendor dashboard + admin panel</div>
+        <div class="step-desc">After your first 10 orders. Not before.</div>
+      </div>
+      <span class="badge badge-later">Phase 2</span>
+    </div>
+    <div class="step-row">
+      <div class="step-num">8</div>
+      <div class="step-content">
+        <div class="step-title">Rider dispatch, route optimization, maps</div>
+        <div class="step-desc">Only when you have consistent order volume. Don't build what you don't need yet.</div>
+      </div>
+      <span class="badge badge-skip">Phase 3</span>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="localhub-root" content="." />
+  <script>
+    (function () {
+      var m = document.querySelector('meta[name="localhub-root"]');
+      var seg = (m && m.getAttribute('content') || '.').trim() || '.';
+      var rootUrl = new URL(seg.replace(/\/?$/, '/'), document.location.href).href;
+      var b = document.createElement('base');
+      b.href = rootUrl;
+      var anchor = document.querySelector('meta[name="localhub-root"]');
+      if (anchor) anchor.insertAdjacentElement('afterend', b);
+      else document.head.appendChild(b);
+    })();
+  </script>
+  <title>Shop — Local Hub</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <script>
+    window.__LOCALHUB = window.__LOCALHUB || {
+      supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
+      supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY'
+    };
+    window.__SOKO = window.__LOCALHUB;
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav" aria-label="Main">
+      <a class="brand" href="index.html">Local Hub</a>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="checkout.html" class="btn btn-secondary btn-sm">
+          Cart <span class="cart-badge" data-cart-count style="display:none"></span>
+        </a>
+      </div>
+    </nav>
+  </header>
+  <div id="vendor-root"></div>
+  <script type="module">
+    import { loadVendorPage } from './js/pages/vendor-loader.js';
+    loadVendorPage().catch(console.error);
+  </script>
+</body>
+</html>

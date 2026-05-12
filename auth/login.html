@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="localhub-root" content=".." />
+  <script>
+    (function () {
+      var m = document.querySelector('meta[name="localhub-root"]');
+      var seg = (m && m.getAttribute('content') || '.').trim() || '.';
+      var rootUrl = new URL(seg.replace(/\/?$/, '/'), document.location.href).href;
+      var b = document.createElement('base');
+      b.href = rootUrl;
+      var anchor = document.querySelector('meta[name="localhub-root"]');
+      if (anchor) anchor.insertAdjacentElement('afterend', b);
+      else document.head.appendChild(b);
+    })();
+  </script>
+  <title>Login — Local Hub</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script>
+    window.__SOKO = window.__SOKO || {
+      supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
+      supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY'
+    };
+  </script>
+</head>
+<body>
+  <div id="nav-slot"></div>
+  <main class="site-wrap page-main" style="max-width:480px">
+    <h1 class="section-title reveal">Welcome back</h1>
+    <form id="login-form" class="card card-body mt-2 reveal reveal-delay-1">
+      <div>
+        <label class="label" for="email">Email</label>
+        <input class="input" id="email" type="email" autocomplete="username" required />
+      </div>
+      <div class="mt-2">
+        <label class="label" for="password">Password</label>
+        <input class="input" id="password" type="password" autocomplete="current-password" required />
+      </div>
+      <p id="login-err" class="text-danger mt-2" style="color:var(--danger);font-size:0.9rem"></p>
+      <button type="submit" class="btn btn-primary btn-block mt-2">Sign in</button>
+      <p class="text-secondary mt-2" style="font-size:0.85rem">New vendor? <a href="onboarding.html">Apply here</a>.</p>
+    </form>
+  </main>
+  <div id="footer-slot"></div>
+  <script type="module">
+    import { bootLogin } from '../js/pages/auth-login.js';
+    bootLogin().catch(console.error);
+  </script>
+</body>
+</html>

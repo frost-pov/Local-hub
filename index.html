@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="localhub-root" content="." />
+  <script>
+    (function () {
+      var m = document.querySelector('meta[name="localhub-root"]');
+      var seg = (m && m.getAttribute('content') || '.').trim() || '.';
+      var rootUrl = new URL(seg.replace(/\/?$/, '/'), document.location.href).href;
+      var b = document.createElement('base');
+      b.href = rootUrl;
+      var anchor = document.querySelector('meta[name="localhub-root"]');
+      if (anchor) anchor.insertAdjacentElement('afterend', b);
+      else document.head.appendChild(b);
+    })();
+  </script>
+  <meta name="description" content="Local Hub Nairobi — browse independent vendor storefronts on one marketplace, combine orders in one cart, and checkout with platform-owned M‑Pesa payment." />
+  <title>Local Hub</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <!-- Supabase keys + demo toggles — see CUSTOMIZATION.md & SUPABASE_VERCEL_SETUP.md -->
+  <script>
+    window.__LOCALHUB = window.__LOCALHUB || {
+      supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
+      supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY',
+      // Replace with Project URL + anon key from Supabase → Settings → API.
+      // While these are placeholders, you still get ~26 demo shops (see yellow preview strip).
+      // Keep showing demo data after wiring Supabase by setting forceDemo: true.
+    };
+    window.__SOKO = window.__LOCALHUB;
+  </script>
+</head>
+<body>
+  <div id="nav-slot"></div>
+  <main>
+    <section class="hero hero--home">
+      <div class="hero-media" role="presentation" aria-hidden="true">
+        <img
+          class="hero-backdrop-img"
+          alt=""
+          width="1920"
+          height="1280"
+          decoding="async"
+          fetchpriority="high"
+          src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1920&h=1280&q=82"
+        />
+      </div>
+      <div class="hero-inner site-wrap">
+        <p class="hero-kicker reveal">Nairobi · multi‑vendor marketplace · platform checkout</p>
+        <h1 class="hero-title-stack reveal reveal-delay-1">
+          <span class="hero-title-line">Shop real storefronts.</span>
+          <span class="hero-title-line hero-title-line--accent">Pay <em>once</em>. Track one order.</span>
+        </h1>
+        <p class="lead reveal reveal-delay-2">Independent vendors publish full shop pages here. You fill a shared cart across restaurants, boutiques, groceries, and services — then pay on‑platform so routing, commission, and weekly seller payouts stay clean.</p>
+        <div class="search-wrap reveal reveal-delay-3">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <label class="sr-only" for="home-search">Search vendors</label>
+          <input id="home-search" class="input" type="search" placeholder="Search by shop name or neighbourhood…" autocomplete="off" />
+        </div>
+      </div>
+      <a class="hero-scroll" href="#browse">Explore shops</a>
+    </section>
+
+    <div class="lh-marquee lh-scroll-reveal" role="presentation" aria-hidden="true">
+      <div class="lh-marquee__viewport">
+        <div class="lh-marquee__track">
+          <div class="lh-marquee__group">
+            <span class="lh-marquee__phrase"><strong>One checkout</strong> platform owns payments</span>
+            <span class="lh-marquee__phrase"><strong>M‑Pesa STK</strong> on every order path</span>
+            <span class="lh-marquee__phrase"><strong>Shared cart</strong> quantities stay tied to each vendor</span>
+            <span class="lh-marquee__phrase"><strong>Weekly payouts</strong> to sellers on schedule</span>
+          </div>
+          <div class="lh-marquee__group">
+            <span class="lh-marquee__phrase"><strong>One checkout</strong> platform owns payments</span>
+            <span class="lh-marquee__phrase"><strong>M‑Pesa STK</strong> on every order path</span>
+            <span class="lh-marquee__phrase"><strong>Shared cart</strong> quantities stay tied to each vendor</span>
+            <span class="lh-marquee__phrase"><strong>Weekly payouts</strong> to sellers on schedule</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lh-vis-band lh-scroll-reveal" role="img" aria-label="Editorial strip: shops, food, coffee">
+      <div class="lh-vis-band__cell" aria-hidden="true">
+        <img class="lh-abs-cover" alt="" width="1200" height="800" loading="lazy" src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=1200&h=800&q=82" />
+      </div>
+      <div class="lh-vis-band__cell" aria-hidden="true">
+        <img class="lh-abs-cover" alt="" width="1200" height="800" loading="lazy" src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1200&h=800&q=82" />
+      </div>
+      <div class="lh-vis-band__cell" aria-hidden="true">
+        <img class="lh-abs-cover" alt="" width="1200" height="800" loading="lazy" src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&h=800&q=82" />
+      </div>
+    </div>
+
+    <section class="lh-split-grid lh-scroll-reveal" aria-labelledby="spotlight-merge">
+      <div class="lh-split-visual lh-split-visual--a">
+        <img class="lh-abs-cover" alt="" width="1400" height="933" loading="lazy" src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1400&h=933&q=82" />
+      </div>
+      <div class="lh-split-copy">
+        <p class="eyebrow" id="spotlight-merge">Multi‑shop checkout</p>
+        <h2 class="section-title">Stop bouncing between separate carts.</h2>
+        <p class="lh-lede">Local Hub wraps every seller in the same storefront language — catalog grids, PDPs, and fulfilment cues — while your basket stays unified. Sellers keep their logos, pricing, and story; riders and finance teams downstream only reconcile <em>your</em> single payment event.</p>
+        <div class="lh-motif-wrap" aria-hidden="true">
+          <svg class="lh-motif lh-motif--cart" viewBox="0 0 240 88" xmlns="http://www.w3.org/2000/svg">
+            <g class="lh-motif-cart__shop lh-motif-cart__shop--1">
+              <circle cx="42" cy="28" r="10" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2"/>
+            </g>
+            <g class="lh-motif-cart__shop lh-motif-cart__shop--2">
+              <circle cx="42" cy="54" r="10" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2"/>
+            </g>
+            <g class="lh-motif-cart__shop lh-motif-cart__shop--3">
+              <circle cx="42" cy="80" r="10" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2"/>
+            </g>
+            <g class="lh-motif-cart__basket">
+              <rect x="154" y="28" rx="10" ry="10" width="74" height="52" fill="none" stroke="rgba(255,255,255,0.92)" stroke-width="3"/>
+              <path d="M166 38h50" stroke="#fa5400" stroke-width="2" opacity="0.55"/>
+              <path d="M166 50h42" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+            </g>
+          </svg>
+        </div>
+        <div class="lh-hero-stats" aria-label="How routing works">
+          <div class="lh-stat">
+            <div class="lh-stat__value">One cart</div>
+            <div class="lh-stat__label">Line‑items grouped by seller so substitutions stay obvious.</div>
+          </div>
+          <div class="lh-stat">
+            <div class="lh-stat__value">One payment</div>
+            <div class="lh-stat__label">Funds enter platform rails — never double‑charged carts across tabs.</div>
+          </div>
+          <div class="lh-stat">
+            <div class="lh-stat__value">10% commission</div>
+            <div class="lh-stat__label">Disclosed upfront; remainder flows to payouts after fulfilment milestones.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lh-graphic-wall-wrap lh-scroll-reveal" aria-labelledby="graphic-wall-heading">
+      <div class="site-wrap lh-graphic-wall-head">
+        <p class="eyebrow">Visual catalogue</p>
+        <h2 class="section-title" id="graphic-wall-heading" style="margin-bottom: var(--space-3)">Dense graphics — how the hub feels in photos</h2>
+        <p class="lede-wide text-secondary" style="max-width: 56ch">Retail campaign energy: same black canvas, but the frame is packed with category texture so this reads like a graphic lookbook, not a blank SaaS page.</p>
+      </div>
+      <div class="lh-graphic-wall">
+        <div class="lh-graphic-wall__tile" data-label="Neighbourhood retail" role="img" aria-label="Interior shop">
+          <img class="lh-abs-cover" alt="" width="800" height="1067" loading="lazy" src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&h=1067&q=82" />
+        </div>
+        <div class="lh-graphic-wall__tile" data-label="Pantry + protein" role="img" aria-label="Food products">
+          <img class="lh-abs-cover" alt="" width="800" height="1067" loading="lazy" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&h=1067&q=82" />
+        </div>
+        <div class="lh-graphic-wall__tile" data-label="Studio goods" role="img" aria-label="Desk and products">
+          <img class="lh-abs-cover" alt="" width="800" height="1067" loading="lazy" src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&h=1067&q=82" />
+        </div>
+        <div class="lh-graphic-wall__tile" data-label="Footwear wall" role="img" aria-label="Sneakers display">
+          <img class="lh-abs-cover" alt="" width="800" height="1067" loading="lazy" src="https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?auto=format&fit=crop&w=800&h=1067&q=82" />
+        </div>
+        <div class="lh-graphic-wall__tile" data-label="Home &amp; room" role="img" aria-label="Furniture">
+          <img class="lh-abs-cover" alt="" width="800" height="1067" loading="lazy" src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&h=1067&q=82" />
+        </div>
+        <div class="lh-graphic-wall__tile" data-label="Hardware runs" role="img" aria-label="Tools and supplies">
+          <img class="lh-abs-cover" alt="" width="800" height="1067" loading="lazy" src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=800&h=1067&q=82" />
+        </div>
+        <div class="lh-graphic-wall__tile" data-label="Lifestyle drop" role="img" aria-label="Lifestyle products">
+          <img class="lh-abs-cover" alt="" width="800" height="1067" loading="lazy" src="https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=800&h=1067&q=82" />
+        </div>
+        <div class="lh-graphic-wall__tile" data-label="Apparel floor" role="img" aria-label="Clothing retail">
+          <img class="lh-abs-cover" alt="" width="800" height="1067" loading="lazy" src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&h=1067&q=82" />
+        </div>
+      </div>
+    </section>
+
+    <section class="lh-split-grid lh-split-grid--mirror lh-scroll-reveal" aria-labelledby="spotlight-delivery">
+      <div class="lh-split-visual lh-split-visual--b">
+        <img class="lh-abs-cover" alt="" width="1400" height="933" loading="lazy" src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1400&h=933&q=82" />
+      </div>
+      <div class="lh-split-copy">
+        <p class="eyebrow" id="spotlight-delivery">Orders that move</p>
+        <h2 class="section-title">From storefront to doorstep.</h2>
+        <p class="lh-lede">Shoppers browse real photography, pick variants, then land on checkout with address + notes in one sheet. Sellers see Local Hub dashboards for prep status while super admins supervise disputes, payouts, and M‑Pesa reconciliation without chasing WhatsApp proofs.</p>
+        <div class="lh-motif-wrap" aria-hidden="true">
+          <svg class="lh-motif lh-motif--route" viewBox="0 0 280 132" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="44" cy="96" r="8" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <text x="24" y="118" fill="rgba(255,255,255,0.42)" font-size="11" font-family="system-ui,sans-serif">Shop</text>
+            <circle cx="236" cy="36" r="8" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+            <text x="196" y="26" fill="rgba(255,255,255,0.42)" font-size="11" font-family="system-ui,sans-serif">Customer</text>
+            <path class="lh-route-path" d="M 52 94 C 120 118 146 42 226 42" />
+          </svg>
+        </div>
+        <div aria-label="M-Pesa checkout emphasis" style="margin-top: var(--space-3)">
+          <div class="lh-motif-mpesa-ring">STK</div>
+          <p class="text-muted" style="font-size: 0.85rem; max-width: 38ch">Push notification checkout mirrors how Nairobi buyers already trust mobile money — no card forms, no orphaned transfers.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lh-photo-rail-section lh-scroll-reveal" aria-label="What you can browse">
+      <div class="lh-photo-rail-head">
+        <p class="eyebrow">Across categories</p>
+        <h2 class="section-title" style="margin-bottom: var(--space-4)">What shows up inside the hub</h2>
+        <p class="lede-wide text-secondary" style="max-width: 60ch">Each tile below is editorial photography for the journeys our vendors cover — boutiques, refill pantries, home improvement, gifting, nightlife supplies. Scroll sideways like a footwear drop wall.</p>
+      </div>
+      <div class="lh-photo-rail">
+        <div class="lh-photo-rail__tile" data-caption="Fashion + streetwear booths">
+          <img class="lh-abs-cover" alt="" width="900" height="1200" loading="lazy" src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=900&h=1200&q=82" />
+        </div>
+        <div class="lh-photo-rail__tile" data-caption="Protein + pantry pickups">
+          <img class="lh-abs-cover" alt="" width="900" height="1200" loading="lazy" src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=900&h=1200&q=82" />
+        </div>
+        <div class="lh-photo-rail__tile" data-caption="Fresh produce crates">
+          <img class="lh-abs-cover" alt="" width="900" height="1200" loading="lazy" src="https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=900&h=1200&q=82" />
+        </div>
+        <div class="lh-photo-rail__tile" data-caption="Work-from-home setups">
+          <img class="lh-abs-cover" alt="" width="900" height="1200" loading="lazy" src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=900&h=1200&q=82" />
+        </div>
+        <div class="lh-photo-rail__tile" data-caption="After-hours gifting">
+          <img class="lh-abs-cover" alt="" width="900" height="1200" loading="lazy" src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&h=1200&q=82" />
+        </div>
+      </div>
+    </section>
+
+    <section class="lh-photo-rail-section lh-scroll-reveal" aria-label="More category photography">
+      <div class="lh-photo-rail-head">
+        <p class="eyebrow">Second pass</p>
+        <h2 class="section-title" style="margin-bottom: var(--space-4)">Graphic inventory wall · scroll the row</h2>
+        <p class="lede-wide text-secondary" style="max-width: 58ch">Another full-width pick of tiles — built to feel like a seasonal release grid: bold crops, hard edges, orange rule marks.</p>
+      </div>
+      <div class="lh-photo-rail lh-photo-rail--accent">
+        <div class="lh-photo-rail__tile" data-caption="Food hall vendors">
+          <img class="lh-abs-cover" alt="" width="900" height="1200" loading="lazy" src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&h=1200&q=82" />
+        </div>
+        <div class="lh-photo-rail__tile" data-caption="Beauty + self-care">
+          <img class="lh-abs-cover" alt="" width="900" height="1200" loading="lazy" src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=900&h=1200&q=82" />
+        </div>
+        <div class="lh-photo-rail__tile" data-caption="Watch + accessories">
+          <img class="lh-abs-cover" alt="" width="900" height="1200" loading="lazy" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&h=1200&q=82" />
+        </div>
+        <div class="lh-photo-rail__tile" data-caption="Electronics counter">
+          <img class="lh-abs-cover" alt="" width="900" height="1200" loading="lazy" src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=900&h=1200&q=82" />
+        </div>
+        <div class="lh-photo-rail__tile" data-caption="Wellness + studio">
+          <img class="lh-abs-cover" alt="" width="900" height="1200" loading="lazy" src="https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?auto=format&fit=crop&w=900&h=1200&q=82" />
+        </div>
+      </div>
+    </section>
+
+    <section class="lh-stories" aria-labelledby="pillars-heading">
+      <div class="site-wrap lh-stories__intro lh-scroll-reveal">
+        <p class="eyebrow">Why founders pick Local Hub</p>
+        <h2 class="section-title" style="margin-bottom: var(--space-4)" id="pillars-heading">Built like a storefront OS, tuned for Kenyan ops.</h2>
+        <p class="lede-wide text-secondary">You are not patching together random plug-ins — this stack hardcodes the marketplace rules Nairobi teams argue about weekly: storefront isolation, pooled checkout, payouts, dispute visibility, and M‑Pesa first.</p>
+      </div>
+      <div class="site-wrap lh-stories__grid">
+        <article class="lh-story-card lh-scroll-reveal">
+          <div class="lh-story-card__visual lh-story-card__visual--a" role="img" aria-label="Vendor tooling for catalog and banners">
+            <img class="lh-abs-cover" alt="" width="1200" height="1500" loading="lazy" src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&h=1500&q=82" />
+          </div>
+          <h3 class="lh-story-card__title">Vendor-grade merchandising</h3>
+          <p class="lh-story-card__body">Every merchant gets banners, SKU grids, and variant presentation that feel like flagship retail — admins stay in dark UI so product photography pops.</p>
+        </article>
+        <article class="lh-story-card lh-scroll-reveal">
+          <div class="lh-story-card__visual lh-story-card__visual--b" role="img" aria-label="Buyer cart at counter">
+            <img class="lh-abs-cover" alt="" width="1200" height="1500" loading="lazy" src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1200&h=1500&q=82" />
+          </div>
+          <h3 class="lh-story-card__title">Cart math that survives dinner rush</h3>
+          <p class="lh-story-card__body">Families can mix mama mboga produce with skincare or hardware without losing totals per seller. Taxes, tips, adjustments stay traceable inside the ledger.</p>
+        </article>
+        <article class="lh-story-card lh-scroll-reveal">
+          <div class="lh-story-card__visual lh-story-card__visual--c" role="img" aria-label="Logistics crates ready for riders">
+            <img class="lh-abs-cover" alt="" width="1200" height="1500" loading="lazy" src="https://images.unsplash.com/photo-1445205170230-053b83016050?auto=format&fit=crop&w=1200&h=1500&q=82" />
+          </div>
+          <h3 class="lh-story-card__title">Ops built for pickups + dispatch</h3>
+          <p class="lh-story-card__body">Order states respect prep queues, SLA promises, and last-mile pings so customer care can answer honestly without calling five shop phones.</p>
+        </article>
+      </div>
+
+      <div class="site-wrap">
+        <div class="lh-mosaic lh-scroll-reveal" aria-hidden="true">
+          <div class="lh-mosaic__cell lh-mosaic__cell--primary">
+            <img class="lh-abs-cover" alt="" width="1600" height="1067" loading="lazy" src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&h=1067&q=82" />
+          </div>
+          <div class="lh-mosaic__col">
+            <div class="lh-mosaic__cell lh-mosaic__cell--sm">
+              <img class="lh-abs-cover" alt="" width="1200" height="900" loading="lazy" src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&h=900&q=82" />
+            </div>
+            <div class="lh-mosaic__cell lh-mosaic__cell--sm">
+              <img class="lh-abs-cover" alt="" width="1200" height="900" loading="lazy" src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1200&h=900&q=82" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lh-graphic-jumbo lh-scroll-reveal" aria-labelledby="jumbo-heading">
+      <img class="lh-graphic-jumbo__cover" alt="" width="2000" height="1333" loading="lazy" decoding="async" src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=2000&h=1333&q=82" />
+      <div class="lh-graphic-jumbo__inner">
+        <p class="eyebrow">Full-bleed statement</p>
+        <h2 class="lh-graphic-jumbo__kicker" id="jumbo-heading">Local <span>energy</span></h2>
+        <p class="lh-graphic-jumbo__lede">One graphic surface for thousands of SKUs — photography does the selling while checkout stays on-platform. Scroll down for live vendor tiles and real product cards.</p>
+      </div>
+    </section>
+
+    <section class="site-wrap lh-discovery-preview lh-scroll-reveal" id="lh-discovery-preview" aria-labelledby="discovery-heading" hidden>
+      <header class="section-head">
+        <p class="eyebrow reveal reveal-delay-1">Preview geography</p>
+        <h2 class="section-title reveal reveal-delay-1" id="discovery-heading">Local discovery on the hub</h2>
+        <p class="section-hint reveal reveal-delay-1">This map is a <strong>demo</strong> of Nairobi-area pins. Shoppers still <strong>browse, cart, and pay on Local Hub</strong> — the “brand site” links are fictional domains so you can see how co-marketing might look without sending checkout elsewhere.</p>
+      </header>
+      <div class="lh-map-ghost-split">
+        <div class="lh-vendor-map-wrap">
+          <div id="vendor-map-root" class="lh-vendor-map" role="region" aria-label="Map of preview vendor neighbourhoods"></div>
+        </div>
+        <aside class="lh-ghost-aside" aria-label="Ghost vendors with hub and demo website links">
+          <h3 class="lh-ghost-aside__title">Ghost storefronts</h3>
+          <p class="section-hint" style="margin-bottom: 0">Each listing links to this hub plus a pretend vendor domain (does not resolve — UI only).</p>
+          <div id="ghost-showcase-root" class="lh-ghost-list"></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="site-wrap page-main page-main--home page-main--browse" id="browse">
+      <p class="eyebrow reveal reveal-delay-2">Directory</p>
+      <h2 class="section-title reveal reveal-delay-2" style="margin-bottom: var(--space-3)">Choose a storefront to walk into</h2>
+      <p class="section-hint reveal reveal-delay-2" style="margin-bottom: var(--space-5)">Category chips mirror PDP filters inside each shop preview. Searching narrows Nairobi vendors instantly.</p>
+      <div class="pill-row reveal reveal-delay-3">
+        <button type="button" class="pill active" data-cat="all">All</button>
+        <button type="button" class="pill" data-cat="fashion">Fashion</button>
+        <button type="button" class="pill" data-cat="groceries">Groceries</button>
+        <button type="button" class="pill" data-cat="services">Services</button>
+        <button type="button" class="pill" data-cat="household">Household</button>
+      </div>
+
+      <div class="section-head mt-3 reveal reveal-delay-3">
+        <h2 class="section-title">Featured vendors</h2>
+        <p class="section-hint">Banner + catalogue · tap through to vendor URL. <a href="vendors.html">Browse all vendors →</a></p>
+      </div>
+      <div class="grid grid-vendors" id="vendors-grid"></div>
+
+      <div class="section-head mt-3 reveal reveal-delay-4" style="margin-top: var(--space-8)">
+        <h2 class="section-title">Editorial picks inside those shops</h2>
+        <p class="section-hint">Highlighted SKUs keep floating cart synced across storefronts.</p>
+      </div>
+      <div class="grid grid-3 grid-products-stagger" id="products-grid"></div>
+
+      <section class="mt-3" style="margin-top: var(--space-10)">
+        <h2 class="section-title lh-scroll-reveal">Operational flow · three checkpoints</h2>
+        <div class="steps-row lh-scroll-reveal" style="gap: var(--space-6); margin-top: var(--space-5)">
+          <div class="step-card" data-step="01"><strong>Browse &amp; shortlist</strong><p class="text-secondary mt-1">Hop between approved vendor URLs on the hub. Profiles show hours, areas served, badges, and live inventory.</p></div>
+          <div class="step-card" data-step="02"><strong>Cart composition</strong><p class="text-secondary mt-1">Mixed baskets keep vendor attribution on every SKU so refunds or substitutions never guess who fulfilled what.</p></div>
+          <div class="step-card" data-step="03"><strong>Secure settlement</strong><p class="text-secondary mt-1">Platform-owned M‑Pesa push captures payment, allocates commission instantly, and schedules weekly seller disbursements minus fees.</p></div>
+        </div>
+      </section>
+    </section>
+  </main>
+  <div id="footer-slot"></div>
+  <button type="button" class="back-top" id="back-top" aria-label="Back to top">↑</button>
+  <script type="module">
+    import { bootHome } from './js/pages/home.js';
+    bootHome().catch(console.error);
+    const b = document.getElementById('back-top');
+    window.addEventListener('scroll', () => {
+      if (!b) return;
+      b.classList.toggle('visible', window.scrollY > 500);
+    });
+    b?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  </script>
+</body>
+</html>

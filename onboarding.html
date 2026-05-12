@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="localhub-root" content="." />
+  <script>
+    (function () {
+      var m = document.querySelector('meta[name="localhub-root"]');
+      var seg = (m && m.getAttribute('content') || '.').trim() || '.';
+      var rootUrl = new URL(seg.replace(/\/?$/, '/'), document.location.href).href;
+      var b = document.createElement('base');
+      b.href = rootUrl;
+      var anchor = document.querySelector('meta[name="localhub-root"]');
+      if (anchor) anchor.insertAdjacentElement('afterend', b);
+      else document.head.appendChild(b);
+    })();
+  </script>
+  <title>Sell on Local Hub</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <script>
+    window.__SOKO = window.__SOKO || {
+      supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
+      supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY'
+    };
+  </script>
+</head>
+<body>
+  <div id="nav-slot"></div>
+  <main class="site-wrap page-main">
+    <h1 class="section-title reveal">Become a vendor</h1>
+    <p class="text-secondary reveal reveal-delay-1">Multi-step application — you’ll get a storefront link after approval.</p>
+
+    <form id="apply-form" class="mt-3">
+      <section data-step="1" class="reveal">
+        <h2 class="section-title" style="font-size:1.2rem">1 · Account</h2>
+        <div class="card card-body grid" style="gap:0.85rem">
+          <div>
+            <label class="label" for="acc_name">Full name</label>
+            <input class="input" id="acc_name" name="acc_name" required />
+          </div>
+          <div>
+            <label class="label" for="acc_phone">Phone</label>
+            <input class="input" id="acc_phone" name="acc_phone" placeholder="07…" />
+          </div>
+          <div>
+            <label class="label" for="acc_email">Email</label>
+            <input class="input" id="acc_email" name="acc_email" type="email" required />
+          </div>
+          <div>
+            <label class="label" for="acc_password">Password</label>
+            <input class="input" id="acc_password" name="acc_password" type="password" minlength="6" required />
+          </div>
+        </div>
+        <p class="text-muted mt-2" style="font-size:0.85rem">Tip: in Supabase Auth, disable “Confirm email” while testing so you stay signed in immediately after sign-up.</p>
+        <button type="button" class="btn btn-primary mt-2" id="to-step-2">Continue</button>
+      </section>
+
+      <section data-step="2" hidden>
+        <h2 class="section-title" style="font-size:1.2rem">2 · Store</h2>
+        <div class="card card-body grid" style="gap:0.85rem">
+          <div>
+            <label class="label" for="store_name">Store name</label>
+            <input class="input" id="store_name" required />
+          </div>
+          <div>
+            <label class="label" for="store_slug">URL slug</label>
+            <input class="input" id="store_slug" required placeholder="jk-fashion" />
+          </div>
+          <div>
+            <label class="label" for="store_category">Category</label>
+            <input class="input" id="store_category" placeholder="fashion" required />
+          </div>
+          <div>
+            <label class="label" for="store_area">Area</label>
+            <input class="input" id="store_area" placeholder="Westlands" />
+          </div>
+          <div>
+            <label class="label" for="store_whatsapp">WhatsApp</label>
+            <input class="input" id="store_whatsapp" placeholder="2547…" />
+          </div>
+          <div>
+            <label class="label" for="store_address">Address / landmark</label>
+            <textarea class="input" id="store_address" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="mt-2" style="display:flex;gap:0.75rem">
+          <button type="button" class="btn btn-ghost" id="back-1">Back</button>
+          <button type="button" class="btn btn-primary" id="to-step-3">Continue</button>
+        </div>
+      </section>
+
+      <section data-step="3" hidden>
+        <h2 class="section-title" style="font-size:1.2rem">3 · Media</h2>
+        <div class="card card-body">
+          <p class="text-secondary">Logo/banner uploads use Supabase Storage — wire <code class="mono">vendor-media</code> bucket + policies, then replace this step with an upload field.</p>
+        </div>
+        <div class="mt-2" style="display:flex;gap:0.75rem">
+          <button type="button" class="btn btn-ghost" id="back-2">Back</button>
+          <button type="button" class="btn btn-primary" id="to-step-4">Continue</button>
+        </div>
+      </section>
+
+      <section data-step="4" hidden>
+        <h2 class="section-title" style="font-size:1.2rem">4 · Agreement</h2>
+        <div class="card card-body text-secondary" id="contract-body"></div>
+        <div class="card card-body mt-2 grid" style="gap:0.75rem">
+          <div>
+            <label class="label" for="contract_sign">Type your full name to sign</label>
+            <input class="input" id="contract_sign" required />
+          </div>
+          <label class="text-secondary" style="display:flex;gap:0.5rem;align-items:flex-start">
+            <input id="contract_agree" type="checkbox" required />
+            <span>I agree to the terms above and understand commission is deducted before payout.</span>
+          </label>
+        </div>
+        <div class="mt-2" style="display:flex;gap:0.75rem">
+          <button type="button" class="btn btn-ghost" id="back-3">Back</button>
+          <button type="submit" class="btn btn-primary">Submit application</button>
+        </div>
+      </section>
+
+      <section data-step="5" hidden class="empty-state">
+        <h2>Thanks — you’re in review</h2>
+        <p class="mt-2">We’ll reach out on WhatsApp. You can browse the marketplace while you wait.</p>
+        <p class="mt-2"><a class="btn btn-primary" href="index.html">Back home</a></p>
+      </section>
+    </form>
+  </main>
+  <div id="footer-slot"></div>
+  <script type="module">
+    import { bootOnboarding } from './js/pages/onboarding.js';
+    bootOnboarding().catch(console.error);
+  </script>
+</body>
+</html>

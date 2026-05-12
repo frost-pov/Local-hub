@@ -1,0 +1,18 @@
+{
+  "rewrites": [
+    { "source": "/shop/:slug", "destination": "/vendor.html?slug=:slug" },
+    { "source": "/vendors", "destination": "/vendors.html" },
+    { "source": "/join", "destination": "/onboarding.html" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/admin/monitoring", "destination": "/admin/monitoring.html" },
+    { "source": "/vendor", "destination": "/vendor-admin/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+/**
+ * LOCAL HUB — CSS entry (import first on every page).
+ * Folder: /css/
+ * @import chain → design-system (tokens + components) + local-hub-bridge (app glue).
+ */
+@import url('./design-system.css');
+@import url('./vendor-skins.css');
+@import url('./local-hub-bridge.css');

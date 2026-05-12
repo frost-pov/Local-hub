@@ -1,0 +1,43 @@
+/**
+ * Storefront tweaks on black — skins only shift divider emphasis.
+ */
+
+body.has-vendor-skin {
+  --shop-surface: #121212;
+  --shop-edge: rgba(255, 255, 255, 0.12);
+}
+
+body.has-vendor-skin .vendor-banner {
+  border-bottom: 1px solid var(--shop-edge);
+}
+
+body.has-vendor-skin .btn-primary {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+body.has-vendor-skin .fab-cart.btn-primary {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+}
+
+body.has-vendor-skin.vendor-skin--atlas { --shop-edge: rgba(255, 255, 255, 0.09); }
+body.has-vendor-skin.vendor-skin--ember { --shop-edge: rgba(255, 255, 255, 0.14); }
+body.has-vendor-skin.vendor-skin--verdant { --shop-edge: rgba(255, 255, 255, 0.11); }
+body.has-vendor-skin.vendor-skin--tide { --shop-edge: rgba(255, 255, 255, 0.1); }
+body.has-vendor-skin.vendor-skin--dune { --shop-edge: rgba(255, 255, 255, 0.13); }
+body.has-vendor-skin.vendor-skin--noir { --shop-edge: rgba(255, 255, 255, 0.18); }
+
+body.has-vendor-skin .vendor-header {
+  background: linear-gradient(180deg, var(--shop-surface) 0%, var(--bg) 100%);
+  border-bottom: 1px solid var(--shop-edge);
+}
+
+body.has-vendor-skin .site-header {
+  background: rgba(17, 17, 17, 0.88);
+  border-bottom-color: var(--shop-edge);
+}
+
+body.has-vendor-skin .vendor-shop .section-title {
+  color: var(--text);
+}

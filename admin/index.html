@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="localhub-root" content=".." />
+  <script>
+    (function () {
+      var m = document.querySelector('meta[name="localhub-root"]');
+      var seg = (m && m.getAttribute('content') || '.').trim() || '.';
+      var rootUrl = new URL(seg.replace(/\/?$/, '/'), document.location.href).href;
+      var b = document.createElement('base');
+      b.href = rootUrl;
+      var anchor = document.querySelector('meta[name="localhub-root"]');
+      if (anchor) anchor.insertAdjacentElement('afterend', b);
+      else document.head.appendChild(b);
+    })();
+  </script>
+  <title>Admin — Local Hub</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script>
+    window.__LOCALHUB = window.__LOCALHUB || {
+      supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
+      supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY'
+    };
+    window.__SOKO = window.__LOCALHUB;
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <nav class="site-nav">
+      <span class="brand">Local Hub Admin</span>
+      <div class="nav-links">
+        <a href="admin/index.html">Dashboard</a>
+        <a href="admin/monitoring.html">Monitoring</a>
+        <a href="admin/vendors.html">Vendors</a>
+        <a href="admin/orders.html">Orders</a>
+        <a href="admin/payouts.html">Payouts</a>
+        <a href="admin/settings.html">Settings</a>
+        <a href="index.html" class="text-secondary">Site</a>
+      </div>
+    </nav>
+  </header>
+  <main class="site-wrap page-main">
+    <h1 class="section-title">Dashboard</h1>
+    <p class="text-secondary">Super-admin only — set your role in SQL: <code class="mono">update profiles set role = 'super_admin' where id = '…'</code></p>
+    <div class="grid grid-3 mt-3">
+      <div class="card card-body">
+        <p class="eyebrow">Pending vendors</p>
+        <p class="section-title" id="pending-count" style="font-size:2rem;margin:0">—</p>
+      </div>
+      <div class="card card-body">
+        <p class="eyebrow">Next</p>
+        <p class="text-secondary" style="margin:0">Approve vendors, tune commissions, watch orders.</p>
+      </div>
+      <div class="card card-body">
+        <p class="eyebrow">M-Pesa</p>
+        <p class="text-secondary" style="margin:0">Deploy Edge Functions + secrets before live payments.</p>
+      </div>
+    </div>
+  </main>
+  <script type="module">
+    import { bootAdminHome } from '../js/pages/admin.js';
+    bootAdminHome().catch(console.error);
+  </script>
+</body>
+</html>

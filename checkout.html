@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="localhub-root" content="." />
+  <script>
+    (function () {
+      var m = document.querySelector('meta[name="localhub-root"]');
+      var seg = (m && m.getAttribute('content') || '.').trim() || '.';
+      var rootUrl = new URL(seg.replace(/\/?$/, '/'), document.location.href).href;
+      var b = document.createElement('base');
+      b.href = rootUrl;
+      var anchor = document.querySelector('meta[name="localhub-root"]');
+      if (anchor) anchor.insertAdjacentElement('afterend', b);
+      else document.head.appendChild(b);
+    })();
+  </script>
+  <title>Checkout — Local Hub</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <script>
+    window.__LOCALHUB = window.__LOCALHUB || {
+      supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
+      supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY'
+    };
+    window.__SOKO = window.__LOCALHUB;
+  </script>
+</head>
+<body>
+  <div id="nav-slot"></div>
+  <main class="site-wrap page-main">
+    <h1 class="section-title reveal">Checkout</h1>
+    <p class="text-secondary reveal reveal-delay-1" id="checkout-login-hint">Log in first — orders attach to your profile for support.</p>
+
+    <div id="checkout-demo-hint" class="card card-body mt-2" hidden style="border-color: rgba(124,92,255,0.35);background:rgba(124,92,255,0.06)"></div>
+
+    <div class="checkout-grid">
+      <div>
+        <h2 class="section-title" style="font-size:1.1rem">Cart</h2>
+        <div id="checkout-lines" class="reveal reveal-delay-2"></div>
+        <div class="card card-body mt-2 reveal reveal-delay-2">
+          <div style="display:flex;justify-content:space-between"><span class="text-secondary">Subtotal</span><span class="mono" id="sum-subtotal">—</span></div>
+          <div style="display:flex;justify-content:space-between;margin-top:0.35rem"><span class="text-secondary">Delivery</span><span class="mono" id="sum-delivery">—</span></div>
+          <div style="display:flex;justify-content:space-between;margin-top:0.65rem;font-weight:600"><span>Total</span><span class="mono" id="sum-total">—</span></div>
+        </div>
+      </div>
+      <div>
+        <form id="checkout-form" class="reveal reveal-delay-3">
+          <h2 class="section-title" style="font-size:1.1rem">Delivery</h2>
+          <div class="card card-body grid" style="gap:0.75rem">
+            <div>
+              <label class="label" for="buyer_name">Full name</label>
+              <input class="input" id="buyer_name" required />
+            </div>
+            <div>
+              <label class="label" for="buyer_phone">M-Pesa phone</label>
+              <input class="input" id="buyer_phone" placeholder="07… or 254…" required />
+            </div>
+            <div>
+              <label class="label" for="buyer_email">Email (optional)</label>
+              <input class="input" id="buyer_email" type="email" />
+            </div>
+            <div>
+              <label class="label" for="delivery_address">Delivery address</label>
+              <textarea class="input" id="delivery_address" rows="3" required></textarea>
+            </div>
+            <div>
+              <label class="label" for="delivery_notes">Notes</label>
+              <textarea class="input" id="delivery_notes" rows="2"></textarea>
+            </div>
+          </div>
+          <div id="pay-section" class="mt-2">
+            <button type="submit" class="btn btn-primary btn-block">Pay with M-Pesa</button>
+            <p id="pay-status" class="text-muted mt-1" style="font-size:0.85rem"></p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+  <div id="footer-slot"></div>
+  <script type="module">
+    import { bootCheckout } from './js/pages/checkout.js';
+    bootCheckout().catch(console.error);
+  </script>
+</body>
+</html>

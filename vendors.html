@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="localhub-root" content="." />
+  <script>
+    (function () {
+      var m = document.querySelector('meta[name="localhub-root"]');
+      var seg = (m && m.getAttribute('content') || '.').trim() || '.';
+      var rootUrl = new URL(seg.replace(/\/?$/, '/'), document.location.href).href;
+      var b = document.createElement('base');
+      b.href = rootUrl;
+      var anchor = document.querySelector('meta[name="localhub-root"]');
+      if (anchor) anchor.insertAdjacentElement('afterend', b);
+      else document.head.appendChild(b);
+    })();
+  </script>
+  <meta name="description" content="Browse all shops on Local Hub — filter by category, search by neighbourhood, open any vendor storefront." />
+  <title>Vendors — Local Hub</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <!-- Supabase keys — same block as index.html; see CUSTOMIZATION.md -->
+  <script>
+    window.__LOCALHUB = window.__LOCALHUB || {
+      supabaseUrl: 'https://YOUR_PROJECT.supabase.co',
+      supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY',
+    };
+    window.__SOKO = window.__LOCALHUB;
+  </script>
+</head>
+<body>
+  <div id="nav-slot"></div>
+  <main id="vendors-directory" class="site-wrap page-main page-main--browse vendors-directory-page" aria-labelledby="vendors-page-title">
+    <p class="eyebrow reveal">Shoppers</p>
+    <h1 class="section-title reveal reveal-delay-1" id="vendors-page-title">All vendors</h1>
+    <p class="section-hint reveal reveal-delay-2" style="margin-bottom: var(--space-4); max-width: 52ch">
+      Every approved shop on the hub — same cards as the home page, without the editorial products strip. Tap a card to open that vendor’s catalog and add to your shared cart.
+    </p>
+
+    <div class="search-wrap reveal reveal-delay-2" style="max-width: min(100%, 520px); margin-bottom: var(--space-5)">
+      <span class="search-icon" aria-hidden="true">⌕</span>
+      <label class="sr-only" for="vendors-directory-search">Search vendors</label>
+      <input
+        id="vendors-directory-search"
+        class="input"
+        type="search"
+        placeholder="Search by shop name, category, or neighbourhood…"
+        autocomplete="off"
+      />
+    </div>
+
+    <div class="pill-row reveal reveal-delay-3">
+      <button type="button" class="pill active" data-cat="all">All</button>
+      <button type="button" class="pill" data-cat="fashion">Fashion</button>
+      <button type="button" class="pill" data-cat="groceries">Groceries</button>
+      <button type="button" class="pill" data-cat="services">Services</button>
+      <button type="button" class="pill" data-cat="household">Household</button>
+    </div>
+
+    <div class="grid grid-vendors mt-3 reveal reveal-delay-4" id="vendors-directory-grid"></div>
+
+    <p class="text-secondary mt-4" style="font-size: 0.9rem">
+      <a href="index.html#browse">← Back to featured vendors &amp; editorial picks on the home page</a>
+    </p>
+  </main>
+  <div id="footer-slot"></div>
+  <script type="module">
+    import { bootVendorsPage } from './js/pages/home.js';
+    bootVendorsPage().catch(console.error);
+  </script>
+</body>
+</html>
