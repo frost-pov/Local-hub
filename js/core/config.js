@@ -37,7 +37,7 @@ export function getSupabaseConfig() {
   const c = appConfig()
   return {
     url: c.supabaseUrl || 'https://rbqidaiyxooxdaresxjj.supabase.co',
-    anonKey: c.supabaseAnonKey || 'YOUR_SUPABASE_ANON_KEY',
+    anonKey: c.supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJicWlkYWl5eG9veGRhcmVzeGpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzUyMjAsImV4cCI6MjA5NDExMTIyMH0.abCE40AXh8vlIDThHRX-p5w21CrTKh3LvTXbcR41igA',
   }
 }
 
