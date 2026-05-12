@@ -99,7 +99,7 @@ When both values are real JWT + `.supabase.co` URL, **`js/core/config.js`** turn
 
 ## Part C — Vercel
 
-1. [vercel.com](https://vercel.com) → **Add New** → **Project** → Import **`frost-pov/local-hub`** (or your repo).
+1. [vercel.com](https://vercel.com) → **Add New** → **Project** → Import **`frost-pov/Local-hub`**.
 2. Framework: **Other** (static site). Root directory = repo root. No build command needed (see **`vercel.json`**).
 3. Deploy. Your site URL will serve **`index.html`**, **`/vendors`**, **`/shop/:slug`**, etc.
 
