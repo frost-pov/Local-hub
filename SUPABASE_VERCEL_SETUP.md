@@ -1,6 +1,6 @@
 # Deploy Local Hub — Supabase + Vercel
 
-This project is plain static HTML/JS served from [`vercel.json`](./vercel.json). You paste public Supabase keys into each page’s `window.__LOCALHUB` block (no bundler secrets step required).
+This project is plain static HTML/JS served from [`vercel.json`](./vercel.json). You paste public Supabase keys into each page’s **`window.__LOCALHUB`** block (**[`SETUP_WALKTHROUGH.md`](./SETUP_WALKTHROUGH.md)** explains Local Hub vs the legacy **`__SOKO`** alias). No bundler secrets step required.
 
 ## 1. Create Supabase
 
@@ -25,7 +25,7 @@ Still in Supabase → **Settings → API** → copy **Project URL** and **`anon`
     supabaseUrl: 'https://YOUR_REF.supabase.co',
     supabaseAnonKey: 'eyJ...your-anon-key...',
   };
-  window.__SOKO = window.__LOCALHUB;
+  window.__SOKO = window.__LOCALHUB; /* optional legacy alias */
 </script>
 ```
 

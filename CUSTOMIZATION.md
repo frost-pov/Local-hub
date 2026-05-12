@@ -8,7 +8,7 @@ Short map of **where to change copy, images, and behaviour**. For deploy + datab
 
 | What | Where |
 |------|--------|
-| Supabase **Project URL** + **anon** key | Every page’s `<script>window.__LOCALHUB = { supabaseUrl, supabaseAnonKey }` (e.g. [`index.html`](./index.html) head). Same object is aliased as `window.__SOKO`. |
+| Supabase **Project URL** + **anon** key | Every page’s **`window.__LOCALHUB`** in the `<script>` block in the `<head>` (e.g. [`index.html`](./index.html)). Some pages also alias `window.__SOKO = window.__LOCALHUB` — same keys, legacy name only. |
 | Force **demo catalog** even with real keys | Add `forceDemo: true` inside `window.__LOCALHUB`. Logic: [`js/core/config.js`](./js/core/config.js) (`shouldUsePlaceholders`, `isSupabaseConfigured`). |
 
 When keys look valid, the app loads **live** vendors/products from Supabase instead of placeholders.

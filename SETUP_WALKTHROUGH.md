@@ -4,6 +4,16 @@ Use this after you have the code on disk. Repo: **`https://github.com/frost-pov/
 
 ---
 
+## Naming: Local Hub vs “Soko”
+
+This product is **Local Hub** (.KE). Configure everything under **`window.__LOCALHUB`**.
+
+Some HTML files also set **`window.__SOKO = window.__LOCALHUB`**. That is **not** a second app — it is an old **alias** so older snippets reading `__SOKO` still see the same URL and anon key. You never paste different keys into Soko; ignore the name.
+
+Internal bits like `sessionStorage`/cart keys may still say `soko_` from an earlier codebase name — behaviour is unchanged. New work should prefer **Local Hub** in copy and **`__LOCALHUB`** in docs.
+
+---
+
 ## Part A — Get the code onto GitHub
 
 ### If this folder does **not** have git yet
@@ -61,6 +71,10 @@ If you created the DB **before** `website_url` existed in `schema.sql`:
 
 - Run **`supabase/migrations/002_vendor_website_url.sql`** once in SQL Editor.
 
+### 3b. Optional: rename display name from legacy “Soko”
+
+If **`platform_settings.platform_name`** was seeded as **`Soko`**, run **`supabase/migrations/003_rename_platform_display_local_hub.sql`** once, or edit the row to **Local Hub**.
+
 ### 4. Copy API keys
 
 1. **Settings** (gear) → **API**.
@@ -70,9 +84,9 @@ If you created the DB **before** `website_url` existed in `schema.sql`:
 
 **Never** put the **`service_role`** key in frontend HTML.
 
-### 5. Paste keys into every frontend page
+### 5. Paste keys into every frontend page (**Local Hub** config)
 
-In each file that contains `window.__LOCALHUB` / `__SOKO`, replace placeholders:
+Replace the placeholder **`window.__LOCALHUB`** block in **every page** that connects to Supabase:
 
 ```html
 <script>
@@ -80,15 +94,27 @@ In each file that contains `window.__LOCALHUB` / `__SOKO`, replace placeholders:
     supabaseUrl: 'https://YOUR_REF.supabase.co',
     supabaseAnonKey: 'eyJ...your-anon-key...',
   };
-  window.__SOKO = window.__LOCALHUB;
+  window.__SOKO = window.__LOCALHUB; /* optional legacy alias — same object */
 </script>
 ```
 
-Search the repo for `YOUR_PROJECT` / `YOUR_SUPABASE` to find every file (at minimum: `index.html`, `vendors.html`, `vendor.html`, `checkout.html`, `onboarding.html`, `auth/login.html`, `auth/callback.html`, `admin/*.html`, `vendor-admin/*.html`, etc.).
+Search the repo for `YOUR_PROJECT` or `YOUR_SUPABASE` (and for `window.__LOCALHUB` without real values).
 
-When both values are real JWT + `.supabase.co` URL, **`js/core/config.js`** turns **demo mode off** unless you add `forceDemo: true`.
+**Must include:** `index.html`, `vendors.html`, `vendor.html`, `checkout.html`, `onboarding.html`, `auth/login.html`, `auth/callback.html`, `admin/*.html`, `vendor-admin/*.html`, `order-confirm.html`.
 
-### 6. Row Level Security & first data
+When **`supabaseUrl`** is your real **`*.supabase.co`** URL and **`supabaseAnonKey`** looks like a JWT (`eyJ…` three parts), **`js/core/config.js`** turns **demo catalog off**. Add `forceDemo: true` only if you intentionally want placeholders with valid keys.
+
+### 6. Align platform name in the database (**Local Hub**, not “Soko”)
+
+If your project was created before seed rows used Local Hub:
+
+- **Table Editor → `platform_settings`:** set **`platform_name`** to **`Local Hub`** (optional: **`platform_tagline`**).
+
+If **`platform_name`** is still **Soko** after an old seed, run **`supabase/migrations/003_rename_platform_display_local_hub.sql`** once in SQL Editor, or edit the row manually.
+
+New installs running the current **`supabase/schema.sql`** get **`Local Hub`** in the seed `INSERT` automatically.
+
+### 7. Row Level Security & first data
 
 1. Policies are intended to be tightened for production — see comments in **`supabase/schema.sql`** and **`CONTEXT.md`**.
 2. Until you seed data, grids can look **empty**:
@@ -111,7 +137,7 @@ When both values are real JWT + `.supabase.co` URL, **`js/core/config.js`** turn
 |------|------|
 | 1 | Repo on GitHub + Vercel connected (above). |
 | 2 | Supabase project + `schema.sql` run. |
-| 3 | Keys pasted into **all** HTML `__LOCALHUB` blocks. |
+| 3 | Keys pasted into **all** **`window.__LOCALHUB`** blocks (every HTML page listed in Part B §5). |
 | 4 | Deploy again on Vercel (or redeploy pushes automatically). |
 | 5 | Insert at least one **approved vendor** + **products** (`is_available`, `images`). |
 | 6 | (**Later**) M‑Pesa Daraja + server/Edge webhook for live payments — see **`CONTEXT.md`**. |

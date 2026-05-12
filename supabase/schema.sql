@@ -1,6 +1,6 @@
 -- ============================================================
--- Soko marketplace — database schema (run in Supabase SQL Editor)
--- CONTEXT.md §4 is the spec; this file is the runnable source of truth.
+-- Local Hub marketplace — database schema (run in Supabase SQL Editor)
+-- CONTEXT.md §4 is historical spec reference; this file is the runnable source of truth.
 -- ============================================================
 
 create extension if not exists "uuid-ossp";
@@ -212,7 +212,7 @@ create table public.platform_settings (
 insert into public.platform_settings (key, value) values
   ('default_commission_rate', '10'),
   ('delivery_fee_base', '10000'),
-  ('platform_name', 'Soko'),
+  ('platform_name', 'Local Hub'),
   ('platform_tagline', 'Your city, delivered.'),
   ('payout_day', 'friday'),
   ('mpesa_shortcode', ''),

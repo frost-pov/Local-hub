@@ -3,7 +3,7 @@
  *
  * Set real values in ONE place before other modules load:
  *   window.__LOCALHUB = { supabaseUrl, supabaseAnonKey }
- * Aliases `window.__SOKO` to the same object for older snippets.
+ * Optional backwards-compatible alias: window.__SOKO = window.__LOCALHUB (same object; prefer __LOCALHUB in new code).
  *
  * Never put the service-role key here — only the anon (public) key.
  */
