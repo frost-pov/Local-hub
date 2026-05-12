@@ -1,6 +1,6 @@
 # Walkthrough — GitHub · Supabase · Vercel (Local Hub)
 
-Use this after you have the code on disk. Your GitHub username in this guide is **`frost-pov`** — replace the repo name if yours differs (`local-hub`, `Local-hub`, etc.).
+Use this after you have the code on disk. Repo: **`https://github.com/frost-pov/Local-hub`** (`frost-pov` account).
 
 ---
 
@@ -19,7 +19,7 @@ git init
 git add .
 git commit -m "Local Hub — marketplace UI, vendors page, demo catalog, docs"
 git branch -M main
-git remote add origin https://github.com/frost-pov/local-hub.git
+git remote add origin https://github.com/frost-pov/Local-hub.git
 git push -u origin main
 ```
 
