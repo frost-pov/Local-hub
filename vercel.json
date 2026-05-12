@@ -1,18 +1,44 @@
-{
-  "rewrites": [
-    { "source": "/shop/:slug", "destination": "/vendor.html?slug=:slug" },
-    { "source": "/vendors", "destination": "/vendors.html" },
-    { "source": "/join", "destination": "/onboarding.html" },
-    { "source": "/admin", "destination": "/admin/index.html" },
-    { "source": "/admin/monitoring", "destination": "/admin/monitoring.html" },
-    { "source": "/vendor", "destination": "/vendor-admin/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
-    }
-  ]
-}
+{
+  "rewrites": [
+    { "source": "/shop/:slug", "destination": "/vendor.html?slug=:slug" },
+    { "source": "/vendors/", "destination": "/vendors.html" },
+    { "source": "/vendors", "destination": "/vendors.html" },
+    { "source": "/join/", "destination": "/onboarding.html" },
+    { "source": "/join", "destination": "/onboarding.html" },
+    { "source": "/apply-as-vendor/", "destination": "/apply-vendor.html" },
+    { "source": "/apply-as-vendor", "destination": "/apply-vendor.html" },
+    { "source": "/login/", "destination": "/auth/login.html" },
+    { "source": "/login", "destination": "/auth/login.html" },
+    { "source": "/auth/callback/", "destination": "/auth/callback.html" },
+    { "source": "/auth/callback", "destination": "/auth/callback.html" },
+    { "source": "/checkout/", "destination": "/checkout.html" },
+    { "source": "/checkout", "destination": "/checkout.html" },
+    { "source": "/admin/applications/", "destination": "/admin/applications.html" },
+    { "source": "/admin/applications", "destination": "/admin/applications.html" },
+    { "source": "/admin/tools/", "destination": "/admin/tools.html" },
+    { "source": "/admin/tools", "destination": "/admin/tools.html" },
+    { "source": "/admin/vendors/", "destination": "/admin/vendors.html" },
+    { "source": "/admin/vendors", "destination": "/admin/vendors.html" },
+    { "source": "/admin/orders/", "destination": "/admin/orders.html" },
+    { "source": "/admin/orders", "destination": "/admin/orders.html" },
+    { "source": "/admin/payouts/", "destination": "/admin/payouts.html" },
+    { "source": "/admin/payouts", "destination": "/admin/payouts.html" },
+    { "source": "/admin/settings/", "destination": "/admin/settings.html" },
+    { "source": "/admin/settings", "destination": "/admin/settings.html" },
+    { "source": "/admin/monitoring/", "destination": "/admin/monitoring.html" },
+    { "source": "/admin/monitoring", "destination": "/admin/monitoring.html" },
+    { "source": "/admin/", "destination": "/admin/index.html" },
+    { "source": "/admin", "destination": "/admin/index.html" },
+    { "source": "/vendor/", "destination": "/vendor-admin/index.html" },
+    { "source": "/vendor", "destination": "/vendor-admin/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
+      ]
+    }
+  ]
+}
+

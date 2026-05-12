@@ -30,13 +30,17 @@
   <header class="site-header">
     <nav class="site-nav">
       <span class="brand">Local Hub Admin</span>
-      <div class="nav-links">
+      <div class="nav-links" style="flex-wrap:wrap;align-items:center">
         <a href="admin/index.html">Dashboard</a>
         <a href="admin/monitoring.html">Monitoring</a>
+        <a href="admin/tools.html">Tools</a>
+        <a href="admin/applications.html">Applications</a>
         <a href="admin/vendors.html">Vendors</a>
         <a href="admin/orders.html">Orders</a>
         <a href="admin/payouts.html">Payouts</a>
         <a href="admin/settings.html">Settings</a>
+        <span id="admin-user-label" class="text-secondary text-sm mono" style="max-width:14rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title=""></span>
+        <button type="button" class="btn btn-ghost btn-sm" id="admin-sign-out">Sign out</button>
         <a href="index.html" class="text-secondary">Site</a>
       </div>
     </nav>

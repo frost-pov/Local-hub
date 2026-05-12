@@ -16,7 +16,7 @@
       else document.head.appendChild(b);
     })();
   </script>
-  <title>Admin · Payouts</title>
+  <title>Admin · Seller applications</title>
   <link rel="stylesheet" href="css/style.css" />
   <script>
     window.__LOCALHUB = window.__LOCALHUB || {
@@ -46,12 +46,13 @@
     </nav>
   </header>
   <main class="site-wrap page-main">
-    <h1 class="section-title">Payouts</h1>
-    <p class="text-secondary">Weekly B2C payouts via Edge Function `payout` (Phase 3).</p>
+    <h1 class="section-title">Seller applications</h1>
+    <p class="text-secondary">Approve to create/publish their <code class="mono">vendors</code> row, bump <code class="mono">profiles.role</code> to <code class="mono">vendor</code>, and mark them live on the hub. Reject to clear the queue (they may reapply after adjusting).</p>
+    <div id="applications-list-slot" class="mt-3"></div>
   </main>
   <script type="module">
-    import { bootAdminPayouts } from '../js/pages/admin.js';
-    bootAdminPayouts().catch(console.error);
+    import { bootAdminApplications } from '../js/pages/admin.js';
+    bootAdminApplications().catch(console.error);
   </script>
 </body>
 </html>

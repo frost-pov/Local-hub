@@ -13,6 +13,16 @@ This project is plain static HTML/JS served from [`vercel.json`](./vercel.json).
 2. Paste everything from [`supabase/schema.sql`](./supabase/schema.sql) → **Run**.
 3. If Supabase reports errors about objects already existing, you may be re-running — either use a fresh project or extend the migration manually.
 
+### Redirect URLs for login / OAuth / magic links
+
+In Supabase → **Authentication** → **URL configuration**, add **Redirect URLs** matching your deployed host:
+
+- `https://YOUR_DOMAIN/auth/callback` (clean path — `vercel.json` maps this to `auth/callback.html`)
+- `https://YOUR_DOMAIN/auth/callback.html`
+- Optional: `https://YOUR_DOMAIN/login`
+
+Set **Site URL** to the same canonical origin (for example `https://local-hub-tan.vercel.app`). Email magic links that don’t pass a saved `next` target land on **Site URL** (often `/`), not `/admin`; use **`https://YOUR_DOMAIN/login?next=/admin`** for password login while testing the dashboard.
+
 The file defines tables (`profiles`, `vendors`, `products`, `orders`, etc.) plus RLS expectations; read comments in SQL for triggers and policies already included.
 
 ## 3. Smoke-test REST
@@ -48,6 +58,43 @@ Set values in Supabase **Table Editor → vendors → website_url**, or via your
 2. Vercel project settings → **Framework preset**: Other (static). Build command/output can stay blank — there is no build.
 3. **Environment variables**: not required if you bake keys into HTML like above; for future automation you’d need a tiny build script to inject vars into HTML — out of scope for the default workflow.
 4. After deploy, open your `*.vercel.app` URL → you should hit `index.html` with clean routes from `vercel.json` (`/shop/:slug` → `vendor.html`).
+
+### Bookmark: production URLs (replace with your domain)
+
+Your current production hostname is **`local-hub-tan.vercel.app`**. Swap it if you attach a custom domain or Vercel renames the project.
+
+Set **`BASE`** = `https://local-hub-tan.vercel.app` (always `https`).
+
+| What | Clean URL |
+|------|-----------|
+| **Home** | `{BASE}/` |
+| **Vendors directory** | `{BASE}/vendors` |
+| **Shop by slug** | `{BASE}/shop/your-vendor-slug` |
+| **Checkout** | `{BASE}/checkout` |
+| **Sign in / sign up** | `{BASE}/login` |
+| **Auth OAuth / magic link callback** | `{BASE}/auth/callback` or `{BASE}/auth/callback.html` |
+| **Become a seller (new account)** | `{BASE}/join` |
+| **Apply to sell (logged in)** | `{BASE}/apply-as-vendor` |
+| **Vendor dashboard** | `{BASE}/vendor` |
+| **Admin home** (**super_admin** — see checklist §5) | `{BASE}/admin` |
+| **Admin · Monitoring** | `{BASE}/admin/monitoring` |
+| **Admin · Tools** (demo users / seed products) | `{BASE}/admin/tools` |
+| **Admin · Applications** | `{BASE}/admin/applications` |
+| **Admin · Vendors** | `{BASE}/admin/vendors` |
+| **Admin · Orders** | `{BASE}/admin/orders` |
+| **Admin · Payouts** | `{BASE}/admin/payouts` |
+| **Admin · Settings** | `{BASE}/admin/settings` |
+
+**Copy-paste (your deploy today):**
+
+- `https://local-hub-tan.vercel.app/`
+- `https://local-hub-tan.vercel.app/admin`
+- `https://local-hub-tan.vercel.app/login`
+- `https://local-hub-tan.vercel.app/join`
+- `https://local-hub-tan.vercel.app/apply-as-vendor`
+- `https://local-hub-tan.vercel.app/vendor`
+
+Alternate Vercel hostnames (`local-hub-git-main-…`, preview URLs) behave the same path-wise; prefer the Production domain you promoted.
 
 Local testing: serve with any static server (not `file://`) so ES modules resolve, for example:
 

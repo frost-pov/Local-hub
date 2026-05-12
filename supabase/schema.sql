@@ -56,6 +56,50 @@ create index vendors_search_idx on public.vendors
   using gin ((name || ' ' || coalesce(area,'') || ' ' || category) gin_trgm_ops);
 
 -- ------------------------------------------------------------
+-- VENDOR APPLICATIONS (queue before storefront row exists)
+-- ------------------------------------------------------------
+create table public.vendor_applications (
+  id uuid primary key default uuid_generate_v4(),
+  applicant_id uuid not null references public.profiles(id) on delete cascade,
+  status text not null default 'pending'
+           check (status in ('pending','approved','rejected','withdrawn')),
+  slug text not null,
+  name text not null,
+  tagline text,
+  description text,
+  story text,
+  category text not null,
+  area text,
+  address text,
+  whatsapp text,
+  hours jsonb not null default '{}'::jsonb,
+  logo_url text,
+  banner_url text,
+  website_url text,
+  lat double precision,
+  lng double precision,
+  payout_phone text,
+  commission_rate numeric(5,2),
+  contract_name text not null,
+  contract_signed_at timestamptz not null default now(),
+  applicant_notes text,
+  admin_notes text,
+  reviewed_at timestamptz,
+  reviewed_by uuid references public.profiles(id) on delete set null,
+  rejection_reason text,
+  created_vendor_id uuid references public.vendors(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create unique index vendor_applications_one_pending_per_applicant
+  on public.vendor_applications (applicant_id)
+  where status = 'pending';
+
+create index vendor_applications_status_created_idx
+  on public.vendor_applications (status, created_at desc);
+
+-- ------------------------------------------------------------
 -- PRODUCTS (prices in “cents”: 250000 = Ksh 2,500)
 -- ------------------------------------------------------------
 create table public.products (
@@ -244,3 +288,25 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
+
+create or replace function public.profiles_enforce_role_integrity()
+returns trigger
+language plpgsql
+as $$
+begin
+  if tg_op = 'UPDATE' and old.role is distinct from new.role then
+    if not exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role = 'super_admin'
+    ) then
+      new.role := old.role;
+    end if;
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists profiles_role_integrity_trigger on public.profiles;
+create trigger profiles_role_integrity_trigger
+  before update on public.profiles
+  for each row execute function public.profiles_enforce_role_integrity();

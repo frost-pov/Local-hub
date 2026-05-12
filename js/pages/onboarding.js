@@ -1,11 +1,17 @@
 /**
- * onboarding.html — vendor applies: sign up, then insert vendors row.
+ * onboarding.html — sign up then queue vendor_application (pending admin approval).
  */
 import { supabase } from '../core/supabase.js'
 import { slugify, showToast } from '../core/utils.js'
 import { loadInto } from '../ui/components.js'
+import {
+  fetchDefaultCommissionRate,
+  isVendorApplicationDuplicateError,
+  readVendorQuestionnaireDom,
+  submitVendorApplication,
+} from './vendor-apply-shared.js'
 
-const state = { step: 1 }
+const state = { step: 1, maxThankYou: 5 }
 
 function showStep(n) {
   state.step = n
@@ -29,30 +35,31 @@ async function bootContract(rate) {
   if (el) el.innerHTML = contractTemplate(rate)
 }
 
-export async function bootOnboarding() {
-  await loadInto('#nav-slot', '/partials/nav.html')
-  await loadInto('#footer-slot', '/partials/footer.html')
-
-  const { data: rateRow } = await supabase
-    .from('platform_settings')
-    .select('value')
-    .eq('key', 'default_commission_rate')
-    .maybeSingle()
-  const rate = parseFloat(rateRow?.value || '10') || 10
-  await bootContract(rate)
-
+function wireSlugAutofill() {
   document.getElementById('store_name')?.addEventListener('input', (e) => {
     const s = slugify(e.target.value)
     const out = document.getElementById('store_slug')
     if (out) out.value = s
   })
+}
 
+function wireStepButtons() {
   document.getElementById('to-step-2')?.addEventListener('click', () => showStep(2))
   document.getElementById('back-1')?.addEventListener('click', () => showStep(1))
   document.getElementById('to-step-3')?.addEventListener('click', () => showStep(3))
   document.getElementById('back-2')?.addEventListener('click', () => showStep(2))
   document.getElementById('to-step-4')?.addEventListener('click', () => showStep(4))
   document.getElementById('back-3')?.addEventListener('click', () => showStep(3))
+}
+
+export async function bootOnboarding() {
+  await loadInto('#nav-slot', '/partials/nav.html')
+  await loadInto('#footer-slot', '/partials/footer.html')
+
+  const rate = await fetchDefaultCommissionRate()
+  await bootContract(rate)
+  wireSlugAutofill()
+  wireStepButtons()
 
   document.getElementById('apply-form')?.addEventListener('submit', async (e) => {
     e.preventDefault()
@@ -63,28 +70,23 @@ export async function bootOnboarding() {
     const full_name = document.getElementById('acc_name')?.value?.trim()
     const phone = document.getElementById('acc_phone')?.value?.trim()
 
-    const name = document.getElementById('store_name')?.value?.trim()
-    const slug = document.getElementById('store_slug')?.value?.trim()
-    const category = document.getElementById('store_category')?.value?.trim()
-    const area = document.getElementById('store_area')?.value?.trim()
-    const whatsapp = document.getElementById('store_whatsapp')?.value?.trim()
-    const address = document.getElementById('store_address')?.value?.trim()
-
-    const contract_name = document.getElementById('contract_sign')?.value?.trim()
-    const contract_ok = document.getElementById('contract_agree')?.checked
+    const { err, payload } = readVendorQuestionnaireDom()
 
     if (!email || !password || password.length < 6) {
       showToast('Use a valid email and password (6+ chars)')
       return
     }
-    if (!name || !slug || !category) {
-      showToast('Store name, slug, and category are required')
+    if (err?.length || !payload) {
+      showToast(err[0] || 'Fill all required seller fields')
       return
     }
-    if (!contract_ok || !contract_name) {
-      showToast('Sign the agreement to continue')
+
+    const slug = slugify(payload.slug || '')
+    if (!slug) {
+      showToast('URL slug is required')
       return
     }
+    payload.slug = slug
 
     const { data: signUpData, error: signErr } = await supabase.auth.signUp({
       email,
@@ -100,38 +102,28 @@ export async function bootOnboarding() {
     const userId = signUpData.user.id
 
     if (full_name || phone) {
-      await supabase.from('profiles').update({
-        full_name: full_name || null,
-        phone: phone || null,
-      }).eq('id', userId)
+      await supabase
+        .from('profiles')
+        .update({
+          full_name: full_name || null,
+          phone: phone || null,
+        })
+        .eq('id', userId)
     }
 
-    const { error: vErr } = await supabase.from('vendors').insert({
-      owner_id: userId,
-      slug,
-      name,
-      tagline: null,
-      description: null,
-      story: null,
-      category,
-      area,
-      address,
-      whatsapp,
-      commission_rate: rate,
-      contract_signed: true,
-      contract_signed_at: new Date().toISOString(),
-      contract_name,
-      is_approved: false,
-    })
-
-    if (vErr) {
-      console.error(vErr)
-      showToast('Vendor profile not saved: ' + (vErr.message || 'error'))
+    const { error } = await submitVendorApplication(userId, payload, rate)
+    if (error) {
+      console.error(error)
+      if (isVendorApplicationDuplicateError(error)) {
+        showToast('You already have a pending application.')
+      } else {
+        showToast('Application failed: ' + (error.message || error.code || 'error'))
+      }
       return
     }
 
-    showToast('Application received')
-    showStep(5)
+    showToast('Application queued for review.')
+    showStep(state.maxThankYou)
   })
 
   showStep(1)

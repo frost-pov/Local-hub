@@ -30,32 +30,38 @@
   <header class="site-header">
     <nav class="site-nav">
       <span class="brand">Local Hub Admin</span>
-      <div class="nav-links">
+      <div class="nav-links" style="flex-wrap:wrap;align-items:center">
         <a href="admin/index.html">Dashboard</a>
         <a href="admin/monitoring.html">Monitoring</a>
+        <a href="admin/tools.html">Tools</a>
+        <a href="admin/applications.html">Applications</a>
         <a href="admin/vendors.html">Vendors</a>
         <a href="admin/orders.html">Orders</a>
         <a href="admin/payouts.html">Payouts</a>
         <a href="admin/settings.html">Settings</a>
+        <span id="admin-user-label" class="text-secondary text-sm mono" style="max-width:14rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title=""></span>
+        <button type="button" class="btn btn-ghost btn-sm" id="admin-sign-out">Sign out</button>
         <a href="index.html" class="text-secondary">Site</a>
       </div>
     </nav>
   </header>
   <main class="site-wrap page-main">
     <h1 class="section-title">Dashboard</h1>
-    <p class="text-secondary">Super-admin only — set your role in SQL: <code class="mono">update profiles set role = 'super_admin' where id = '…'</code></p>
+    <p class="text-secondary mb-2">Super-admin only — promote your account via SQL initially: <code class="mono">update profiles set role = 'super_admin' where id = '…'</code>. Then log in below for the full dashboard.</p>
     <div class="grid grid-3 mt-3">
       <div class="card card-body">
-        <p class="eyebrow">Pending vendors</p>
-        <p class="section-title" id="pending-count" style="font-size:2rem;margin:0">—</p>
+        <p class="eyebrow">Pending seller applications</p>
+        <p class="section-title" id="pending-apps-count" style="font-size:2rem;margin:0">—</p>
+        <p class="text-secondary mt-2 mb-0"><a href="applications.html">Open applications →</a> · <a href="tools.html">Demo seeds</a></p>
       </div>
       <div class="card card-body">
-        <p class="eyebrow">Next</p>
-        <p class="text-secondary" style="margin:0">Approve vendors, tune commissions, watch orders.</p>
+        <p class="eyebrow">Vendors unpublished</p>
+        <p class="section-title" id="pending-count" style="font-size:2rem;margin:0">—</p>
+        <p class="text-secondary mt-2 mb-0"><a href="vendors.html">Vendor list →</a></p>
       </div>
       <div class="card card-body">
         <p class="eyebrow">M-Pesa</p>
-        <p class="text-secondary" style="margin:0">Deploy Edge Functions + secrets before live payments.</p>
+        <p class="text-secondary" style="margin:0">Deploy Edge Functions + secrets before taking live payments.</p>
       </div>
     </div>
   </main>

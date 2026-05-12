@@ -16,7 +16,7 @@
       else document.head.appendChild(b);
     })();
   </script>
-  <title>Admin · Payouts</title>
+  <title>Admin · Tools</title>
   <link rel="stylesheet" href="css/style.css" />
   <script>
     window.__LOCALHUB = window.__LOCALHUB || {
@@ -46,12 +46,34 @@
     </nav>
   </header>
   <main class="site-wrap page-main">
-    <h1 class="section-title">Payouts</h1>
-    <p class="text-secondary">Weekly B2C payouts via Edge Function `payout` (Phase 3).</p>
+    <h1 class="section-title">Tools</h1>
+    <p class="text-secondary">Throwaway testers and listing seeds. With Auth email confirmation off, sign-ups return a session straight away. Emails look like <code class="mono">lh_demo_<em>token</em>_1@example.com</code> — delete in Authentication when done. Spacing batches by ~1.5 s avoids rate limits.</p>
+
+    <div class="card card-body mt-3">
+      <p class="eyebrow mb-2">Demo shoppers (3 × Auth accounts)</p>
+      <p class="text-secondary text-sm mb-2">Password for every created account:<br /><code id="demo-buyer-password" class="mono">LocalHub-Demo1!</code></p>
+      <button type="button" class="btn btn-primary btn-sm" id="seed-buyers-btn">Create 3 demo shoppers</button>
+      <pre id="seed-buyers-output" class="mono text-secondary text-sm mt-2 mb-0" style="white-space:pre-wrap;max-height:12rem;overflow:auto"></pre>
+    </div>
+
+    <div class="card card-body mt-3">
+      <p class="eyebrow mb-2">Demo products (attached to vendor)</p>
+      <label class="label" for="seed-vendor-select">Vendor</label>
+      <select class="input mb-2" id="seed-vendor-select" style="max-width:24rem"></select>
+      <div>
+        <button type="button" class="btn btn-primary btn-sm" id="seed-products-btn">Seed 5 demo listings</button>
+      </div>
+      <pre id="seed-products-output" class="mono text-secondary text-sm mt-2 mb-0" style="white-space:pre-wrap;max-height:12rem;overflow:auto"></pre>
+    </div>
+
+    <div class="card card-body mt-3">
+      <p class="eyebrow mb-2">Recent profiles</p>
+      <div id="profiles-preview-slot"><p class="text-secondary mb-0">Loading…</p></div>
+    </div>
   </main>
   <script type="module">
-    import { bootAdminPayouts } from '../js/pages/admin.js';
-    bootAdminPayouts().catch(console.error);
+    import { bootAdminTools } from '../js/pages/admin.js';
+    bootAdminTools().catch(console.error);
   </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
  * vendors.html: full customer-facing vendor directory (`bootVendorsPage`).
  */
 import { supabase } from '../core/supabase.js'
-import { formatPrice, trackEvent, safeHttpUrl } from '../core/utils.js'
+import { formatPrice, trackEvent, safeHttpUrl, showToast } from '../core/utils.js'
 import { updateCartBadge } from '../ui/cart.js'
 import { loadInto } from '../ui/components.js'
 import { vendorPageHref, resolveAppPath } from '../core/paths.js'
@@ -586,7 +586,35 @@ function setupScrollReveal() {
   roots.forEach((el) => io.observe(el))
 }
 
+function flushAuthGateReject() {
+  try {
+    const raw = sessionStorage.getItem('lh_gate_reject')
+    if (!raw) return
+    sessionStorage.removeItem('lh_gate_reject')
+    const o = JSON.parse(raw)
+    const adminNeeded =
+      Array.isArray(o.allowed) && o.allowed.includes('super_admin')
+    if (o.kind === 'no_profile')
+      showToast(
+        adminNeeded
+          ? 'Signed in, but no profile row yet. Reload after your Supabase trigger runs, or add a profiles row.'
+          : 'Signed in, but profile data is missing. Check Supabase.',
+        'warning'
+      )
+    else if (o.kind === 'wrong_role' && adminNeeded)
+      showToast(
+        `This account is "${o.got_role || 'customer'}" · /admin needs super_admin in public.profiles.`,
+        'warning'
+      )
+    else if (o.kind === 'wrong_role')
+      showToast('Signed in · this page needs a permission you do not have yet.', 'warning')
+  } catch {
+    sessionStorage.removeItem('lh_gate_reject')
+  }
+}
+
 async function bootHome() {
+  flushAuthGateReject()
   injectPreviewChrome()
   await loadInto('#nav-slot', '/partials/nav.html')
   await loadInto('#footer-slot', '/partials/footer.html')
@@ -627,3 +655,5 @@ async function bootHome() {
 
   trackEvent('page_view', { payload: { page: 'home' } })
 }
+
+export { bootHome }

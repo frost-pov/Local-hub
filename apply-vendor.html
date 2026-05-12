@@ -16,7 +16,7 @@
       else document.head.appendChild(b);
     })();
   </script>
-  <title>Sell on Local Hub</title>
+  <title>Apply to sell — Local Hub</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/animations.css" />
   <script>
@@ -30,36 +30,14 @@
 <body>
   <div id="nav-slot"></div>
   <main class="site-wrap page-main">
-    <h1 class="section-title reveal">Become a vendor</h1>
-    <p class="text-secondary reveal reveal-delay-1">Create an account, then queue your storefront for admin approval. Existing account? <a href="apply-vendor.html">Apply while signed in</a>.</p>
+    <h1 class="section-title reveal">Apply to sell</h1>
+    <p class="text-secondary reveal reveal-delay-1">
+      You must <a href="auth/login.html?next=apply-vendor.html">sign in</a> first — we&apos;ll queue your shop for approval.
+    </p>
 
-    <form id="apply-form" class="mt-3">
+    <form id="apply-logged-form" class="mt-3">
       <section data-step="1" class="reveal">
-        <h2 class="section-title" style="font-size:1.2rem">1 · Account</h2>
-        <div class="card card-body grid" style="gap:0.85rem">
-          <div>
-            <label class="label" for="acc_name">Full name</label>
-            <input class="input" id="acc_name" name="acc_name" required />
-          </div>
-          <div>
-            <label class="label" for="acc_phone">Phone</label>
-            <input class="input" id="acc_phone" name="acc_phone" placeholder="07…" />
-          </div>
-          <div>
-            <label class="label" for="acc_email">Email</label>
-            <input class="input" id="acc_email" name="acc_email" type="email" required />
-          </div>
-          <div>
-            <label class="label" for="acc_password">Password</label>
-            <input class="input" id="acc_password" name="acc_password" type="password" minlength="6" required />
-          </div>
-        </div>
-        <p class="text-muted mt-2" style="font-size:0.85rem">With email confirmation off in Supabase Auth, you stay signed in right after vendor sign-up. Turn confirmation back on before production traffic.</p>
-        <button type="button" class="btn btn-primary mt-2" id="to-step-2">Continue</button>
-      </section>
-
-      <section data-step="2" hidden>
-        <h2 class="section-title" style="font-size:1.2rem">2 · Store</h2>
+        <h2 class="section-title" style="font-size:1.2rem">1 · Store</h2>
         <div class="card card-body grid" style="gap:0.85rem">
           <div>
             <label class="label" for="store_name">Store name</label>
@@ -81,7 +59,7 @@
           </div>
           <div style="grid-column:1/-1">
             <label class="label" for="store_tagline">Tagline</label>
-            <input class="input" id="store_tagline" maxlength="280" placeholder="One line shoppers see first" />
+            <input class="input" id="store_tagline" placeholder="One line shoppers see first" maxlength="280" />
           </div>
           <div style="grid-column:1/-1">
             <label class="label" for="store_description">Description</label>
@@ -89,7 +67,7 @@
           </div>
           <div style="grid-column:1/-1">
             <label class="label" for="store_story">Your story</label>
-            <textarea class="input" id="store_story" rows="2"></textarea>
+            <textarea class="input" id="store_story" rows="2" placeholder="Optional — local roots, ethos"></textarea>
           </div>
           <div>
             <label class="label" for="store_area">Area</label>
@@ -109,18 +87,15 @@
           </div>
           <div style="grid-column:1/-1">
             <label class="label" for="store_applicant_notes">Notes for the team</label>
-            <textarea class="input" id="store_applicant_notes" rows="2" placeholder="Licences, compliance, referrals…"></textarea>
+            <textarea class="input" id="store_applicant_notes" rows="2" placeholder="Compliance links, licences, referrals…"></textarea>
           </div>
         </div>
-        <div class="mt-2" style="display:flex;gap:0.75rem">
-          <button type="button" class="btn btn-ghost" id="back-1">Back</button>
-          <button type="button" class="btn btn-primary" id="to-step-3">Continue</button>
-        </div>
+        <button type="button" class="btn btn-primary mt-2" id="apply-s1-next">Continue</button>
       </section>
 
-      <section data-step="3" hidden>
-        <h2 class="section-title" style="font-size:1.2rem">3 · Links &amp; media</h2>
-        <p class="text-secondary text-sm">Paste public image URLs — optional but recommended.</p>
+      <section data-step="2" hidden>
+        <h2 class="section-title" style="font-size:1.2rem">2 · Links & media</h2>
+        <p class="text-secondary text-sm">Paste image URLs today; uploads can plug into Supabase Storage later.</p>
         <div class="card card-body grid mt-2" style="gap:0.85rem">
           <div style="grid-column:1/-1">
             <label class="label" for="store_logo_url">Logo URL</label>
@@ -136,13 +111,13 @@
           </div>
         </div>
         <div class="mt-2" style="display:flex;gap:0.75rem">
-          <button type="button" class="btn btn-ghost" id="back-2">Back</button>
-          <button type="button" class="btn btn-primary" id="to-step-4">Continue</button>
+          <button type="button" class="btn btn-ghost" id="apply-s2-back">Back</button>
+          <button type="button" class="btn btn-primary" id="apply-s2-next">Continue</button>
         </div>
       </section>
 
-      <section data-step="4" hidden>
-        <h2 class="section-title" style="font-size:1.2rem">4 · Agreement</h2>
+      <section data-step="3" hidden>
+        <h2 class="section-title" style="font-size:1.2rem">3 · Agreement</h2>
         <div class="card card-body text-secondary" id="contract-body"></div>
         <div class="card card-body mt-2 grid" style="gap:0.75rem">
           <div>
@@ -155,22 +130,22 @@
           </label>
         </div>
         <div class="mt-2" style="display:flex;gap:0.75rem">
-          <button type="button" class="btn btn-ghost" id="back-3">Back</button>
+          <button type="button" class="btn btn-ghost" id="apply-s3-back">Back</button>
           <button type="submit" class="btn btn-primary">Submit application</button>
         </div>
       </section>
 
-      <section data-step="5" hidden class="empty-state">
+      <section data-step="4" hidden class="empty-state">
         <h2>Thanks — you&apos;re in review</h2>
-        <p class="mt-2">Your application is queued. An admin creates your live shop after approval. You can browse the marketplace while you wait.</p>
+        <p class="mt-2">We&apos;ll email or WhatsApp you. You can keep browsing the marketplace.</p>
         <p class="mt-2"><a class="btn btn-primary" href="index.html">Back home</a></p>
       </section>
     </form>
   </main>
   <div id="footer-slot"></div>
   <script type="module">
-    import { bootOnboarding } from './js/pages/onboarding.js';
-    bootOnboarding().catch(console.error);
+    import { bootVendorApplyLoggedIn } from './js/pages/vendor-apply-logged.js';
+    bootVendorApplyLoggedIn().catch(console.error);
   </script>
 </body>
 </html>

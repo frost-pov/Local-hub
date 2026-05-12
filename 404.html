@@ -3,27 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="localhub-root" content="." />
-  <script>
-    (function () {
-      var m = document.querySelector('meta[name="localhub-root"]');
-      var seg = (m && m.getAttribute('content') || '.').trim() || '.';
-      var rootUrl = new URL(seg.replace(/\/?$/, '/'), document.location.href).href;
-      var b = document.createElement('base');
-      b.href = rootUrl;
-      var anchor = document.querySelector('meta[name="localhub-root"]');
-      if (anchor) anchor.insertAdjacentElement('afterend', b);
-      else document.head.appendChild(b);
-    })();
-  </script>
   <title>Page not found — Local Hub</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
   <main class="site-wrap page-main empty-state">
     <h1>404</h1>
     <p class="mt-2 text-secondary">This page doesn’t exist (yet).</p>
-    <p class="mt-2"><a class="btn btn-primary" href="index.html">Home</a></p>
+    <p class="mt-2 text-secondary text-sm">
+      Try <a href="/">Home</a> · <a href="/login">Login</a> · <a href="/login?next=/admin">Admin login</a> · <a href="/join">Sell</a>
+    </p>
+    <p class="mt-2"><a class="btn btn-primary" href="/">Home</a></p>
   </main>
 </body>
 </html>
+

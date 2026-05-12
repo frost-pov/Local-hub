@@ -13,6 +13,7 @@ alter table public.vendor_payouts enable row level security;
 alter table public.notifications enable row level security;
 alter table public.analytics_events enable row level security;
 alter table public.platform_settings enable row level security;
+alter table public.vendor_applications enable row level security;
 
 -- Stable helper functions (SECURITY DEFINER bypasses RLS when reading profiles/vendors)
 create or replace function public.current_role()
@@ -47,6 +48,34 @@ create policy "Users update own profile" on public.profiles
 drop policy if exists "Super admin reads all profiles" on public.profiles;
 create policy "Super admin reads all profiles" on public.profiles
   for select using (public.current_role() = 'super_admin');
+
+drop policy if exists "Super admin updates all profiles" on public.profiles;
+create policy "Super admin updates all profiles" on public.profiles
+  for update using (public.current_role() = 'super_admin');
+
+-- ------------------------------------------------------------
+-- VENDOR APPLICATIONS
+-- ------------------------------------------------------------
+drop policy if exists "Applicant reads own vendor applications"
+  on public.vendor_applications;
+create policy "Applicant reads own vendor applications"
+  on public.vendor_applications
+  for select using (applicant_id = auth.uid());
+
+drop policy if exists "Applicant inserts own vendor application"
+  on public.vendor_applications;
+create policy "Applicant inserts own vendor application"
+  on public.vendor_applications
+  for insert with check (
+    applicant_id = auth.uid()
+    and status = 'pending'
+  );
+
+drop policy if exists "Super admin full access vendor_applications"
+  on public.vendor_applications;
+create policy "Super admin full access vendor_applications"
+  on public.vendor_applications
+  for all using (public.current_role() = 'super_admin');
 
 -- ------------------------------------------------------------
 -- VENDORS

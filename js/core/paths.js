@@ -16,13 +16,55 @@ export function resolveAppPath(pathFromRoot) {
   return new URL(clean, getSiteRootUrl()).href
 }
 
-/** Post-login redirect target from ?next= (supports file:// and hosted). */
+/** Post-login / callback redirect — same-origin only for absolute URLs. */
 export function normalizeNextUrl(raw) {
-  if (!raw) return resolveAppPath('index.html')
-  if (/^(https?:|file:)/i.test(String(raw))) return String(raw)
-  const s = String(raw)
-  if (s.startsWith('/')) return resolveAppPath(s.slice(1))
-  return resolveAppPath(s)
+  const fallback = resolveAppPath('index.html')
+  if (raw == null || String(raw).trim() === '') return fallback
+
+  let s = String(raw).trim()
+  try {
+    s = decodeURIComponent(s)
+  } catch {
+    /* keep */
+  }
+  if (!s) return fallback
+
+  const proto = typeof window !== 'undefined' ? window.location.protocol : ''
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+
+  if (/^(https?:|file:)/i.test(s)) {
+    try {
+      const u = new URL(s)
+      if (u.protocol === 'file:') return s
+      if (!origin || (proto !== 'http:' && proto !== 'https:')) return s
+      if (u.origin !== origin) return `${origin}/`
+      return `${origin}${u.pathname}${u.search}${u.hash}`
+    } catch {
+      return fallback
+    }
+  }
+
+  const pathOnly = s.startsWith('/') ? s : `/${s}`
+  if (proto === 'http:' || proto === 'https:') {
+    try {
+      return new URL(pathOnly, origin).href
+    } catch {
+      /* fallthrough */
+    }
+  }
+  return resolveAppPath(pathOnly.replace(/^\/+/, '') || 'index.html')
+}
+
+/** Browser login URL (`/login` on Vercel; `auth/login.html` under file://). */
+export function loginPageHref() {
+  try {
+    const { protocol, origin } = window.location
+    if (protocol === 'http:' || protocol === 'https:')
+      return new URL('/login', origin).href
+  } catch {
+    /* noop */
+  }
+  return resolveAppPath('auth/login.html')
 }
 
 /** Vendor shop link — works without /shop rewrite (static + file://). */
