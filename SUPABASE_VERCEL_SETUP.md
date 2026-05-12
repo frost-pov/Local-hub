@@ -25,7 +25,7 @@ Set **Site URL** to the same canonical origin (for example `https://local-hub-ta
 
 ### “Signed in but no profile row yet” (`/admin`)
 
-That means `auth.users` has your login but **`public.profiles` has no matching row**. Common if the signup trigger wasn’t deployed yet or **`profiles.phone`** unique rejected an empty duplicate. In Supabase → **SQL Editor**, run **`supabase/migrations/005_backfill_profiles_fix_trigger.sql`** once (it backfills missing rows and replaces `handle_new_user` with a safer version). Then set `role = 'super_admin'` for your UUID if needed.
+That means `auth.users` has your login but **`public.profiles` has no matching row**. Common if the signup trigger wasn’t deployed yet or **`profiles.phone`** unique rejected an empty duplicate. In Supabase → **SQL Editor** → **New query**: open the file [`supabase/migrations/005_backfill_profiles_fix_trigger.sql`](./supabase/migrations/005_backfill_profiles_fix_trigger.sql) in your editor, **select everything inside it**, paste into Supabase, then **Run**. Typing the path as a line of SQL will error—only the `INSERT` / `CREATE FUNCTION` / `CREATE TRIGGER` statements belong in the query box.
 
 The file defines tables (`profiles`, `vendors`, `products`, `orders`, etc.) plus RLS expectations; read comments in SQL for triggers and policies already included.
 

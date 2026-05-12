@@ -597,8 +597,8 @@ function flushAuthGateReject() {
     if (o.kind === 'no_profile')
       showToast(
         adminNeeded
-          ? 'Your account has no profile row yet. In Supabase → SQL Editor, run supabase/migrations/005_backfill_profiles_fix_trigger.sql once, then reload and open /admin again.'
-          : 'Your account has no profile row yet. Ask the owner to run 005_backfill_profiles_fix_trigger.sql in Supabase SQL Editor.',
+          ? 'No profile row yet. In Supabase → SQL Editor: open the file 005_backfill_profiles_fix_trigger.sql in this repo, select ALL the SQL, paste into the editor, Run (do not paste the file path). Reload, then open /admin.'
+          : 'No profile row yet. The owner should paste the SQL from 005_backfill_profiles_fix_trigger.sql into Supabase SQL Editor—copy the code, not the filename.',
         'warning'
       )
     else if (o.kind === 'wrong_role' && adminNeeded)
