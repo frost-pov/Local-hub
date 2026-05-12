@@ -36,7 +36,7 @@ function appConfig() {
 export function getSupabaseConfig() {
   const c = appConfig()
   return {
-    url: c.supabaseUrl || 'https://YOUR_PROJECT.supabase.co',
+    url: c.supabaseUrl || 'https://rbqidaiyxooxdaresxjj.supabase.co',
     anonKey: c.supabaseAnonKey || 'YOUR_SUPABASE_ANON_KEY',
   }
 }
