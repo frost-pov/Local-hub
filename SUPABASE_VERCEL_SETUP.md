@@ -23,6 +23,10 @@ In Supabase → **Authentication** → **URL configuration**, add **Redirect URL
 
 Set **Site URL** to the same canonical origin (for example `https://local-hub-tan.vercel.app`). Email magic links that don’t pass a saved `next` target land on **Site URL** (often `/`), not `/admin`; use **`https://YOUR_DOMAIN/login?next=/admin`** for password login while testing the dashboard.
 
+### “Signed in but no profile row yet” (`/admin`)
+
+That means `auth.users` has your login but **`public.profiles` has no matching row**. Common if the signup trigger wasn’t deployed yet or **`profiles.phone`** unique rejected an empty duplicate. In Supabase → **SQL Editor**, run **`supabase/migrations/005_backfill_profiles_fix_trigger.sql`** once (it backfills missing rows and replaces `handle_new_user` with a safer version). Then set `role = 'super_admin'` for your UUID if needed.
+
 The file defines tables (`profiles`, `vendors`, `products`, `orders`, etc.) plus RLS expectations; read comments in SQL for triggers and policies already included.
 
 ## 3. Smoke-test REST

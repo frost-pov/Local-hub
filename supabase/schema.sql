@@ -272,14 +272,29 @@ language plpgsql
 security definer
 set search_path = public
 as $$
-begin
-  insert into public.profiles (id, full_name, phone, role)
-  values (
-    new.id,
-    coalesce(new.raw_user_meta_data->>'full_name', ''),
-    coalesce(new.phone, new.raw_user_meta_data->>'phone'),
-    'customer'
+declare
+  phone_candidate text := nullif(
+    trim(coalesce(new.phone::text, new.raw_user_meta_data->>'phone', '')),
+    ''
   );
+begin
+  begin
+    insert into public.profiles (id, full_name, phone, role)
+    values (
+      new.id,
+      trim(coalesce(new.raw_user_meta_data->>'full_name', '')),
+      phone_candidate,
+      'customer'
+    );
+  exception when unique_violation then
+    insert into public.profiles (id, full_name, phone, role)
+    values (
+      new.id,
+      trim(coalesce(new.raw_user_meta_data->>'full_name', '')),
+      null,
+      'customer'
+    );
+  end;
   return new;
 end;
 $$;
