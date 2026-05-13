@@ -25,9 +25,15 @@ Set **Site URL** to the same canonical origin (for example `https://local-hub-ta
 
 ### “Signed in but no profile row yet” (`/admin`)
 
-That means `auth.users` has your login but **`public.profiles` has no matching row**. Common if the signup trigger wasn’t deployed yet or **`profiles.phone`** unique rejected an empty duplicate. In Supabase → **SQL Editor** → **New query**: open the file [`supabase/migrations/005_backfill_profiles_fix_trigger.sql`](./supabase/migrations/005_backfill_profiles_fix_trigger.sql) in your editor, **select everything inside it**, paste into Supabase, then **Run**. Typing the path as a line of SQL will error—only the `INSERT` / `CREATE FUNCTION` / `CREATE TRIGGER` statements belong in the query box.
+That usually means either **(A)** `auth.users` has your login but **`public.profiles` has no matching row**, or **(B)** **`profiles` exists but REST cannot read it** (`42501 insufficient_privilege`): RLS alone is not enough—you need **`GRANT`** on tables for roles `anon` / `authenticated` / `service_role`.
 
-The file defines tables (`profiles`, `vendors`, `products`, `orders`, etc.) plus RLS expectations; read comments in SQL for triggers and policies already included.
+- **Fresh install:** [`supabase/schema.sql`](./supabase/schema.sql) now ends with GRANTs; paste the full file once and you cover both tables and privileges.
+- **Existing project (you applied schema earlier without GRANTs):** paste and run EVERY line from [`supabase/migrations/006_postgrest_grants_public.sql`](./supabase/migrations/006_postgrest_grants_public.sql) → **Run** (safe to re-run). Reload the site; the home page may toast a hint if reads are still blocked.
+- **Still “no profile” after privileges look OK:** backfill + trigger fix [`supabase/migrations/005_backfill_profiles_fix_trigger.sql`](./supabase/migrations/005_backfill_profiles_fix_trigger.sql) in **SQL Editor** — **copy the SQL only**, paste into the editor, **Run**. Do not paste the file path into the SQL box (Postgres errors near `supabase`).
+
+Comments in migrations describe RLS, triggers, and policies.
+
+Older copies of [`js/core/auth.js`](./js/core/auth.js) retried **`profiles`** reads five times whenever the REST response had **no row** (empty `data`). That mimicked ~5+s of delay before bouncing to home; deploy **current `auth.js`**: missing rows wrong-role/admin checks abort after one successful response.
 
 ## 3. Smoke-test REST
 

@@ -601,6 +601,11 @@ function flushAuthGateReject() {
           : 'No profile row yet. The owner should paste the SQL from 005_backfill_profiles_fix_trigger.sql into Supabase SQL Editor—copy the code, not the filename.',
         'warning'
       )
+    else if (o.kind === 'profiles_api_error')
+      showToast(
+        `Profile reads are blocked (${o.detail || 'permission error'}). In Supabase → SQL paste and run EVERY line from migrations/006_postgrest_grants_public.sql then reload.`,
+        'warning'
+      )
     else if (o.kind === 'wrong_role' && adminNeeded)
       showToast(
         `This account is "${o.got_role || 'customer'}" · /admin needs super_admin in public.profiles.`,

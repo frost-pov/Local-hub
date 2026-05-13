@@ -325,3 +325,19 @@ drop trigger if exists profiles_role_integrity_trigger on public.profiles;
 create trigger profiles_role_integrity_trigger
   before update on public.profiles
   for each row execute function public.profiles_enforce_role_integrity();
+
+-- ------------------------------------------------------------
+-- API roles: PostgREST / Supabase REST (RLS still filters rows).
+-- Omitting GRANTs causes 42501 on .from('profiles'); the app treats
+-- repeated errors differently from “no matching row”—see migrations/006.
+-- ------------------------------------------------------------
+grant usage on schema public to anon, authenticated, service_role;
+grant select on all tables in schema public to anon, authenticated;
+grant insert, update, delete on all tables in schema public to authenticated;
+grant all on all tables in schema public to service_role;
+alter default privileges in schema public
+grant select on tables to anon, authenticated;
+alter default privileges in schema public
+grant insert, update, delete on tables to authenticated;
+alter default privileges in schema public
+grant all on tables to service_role;
