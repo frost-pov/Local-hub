@@ -19,17 +19,28 @@
   <title>Vendor · Settings</title>
   <link rel="stylesheet" href="css/style.css" />
   <script>
-    window.__SOKO = window.__SOKO || {
+    window.__LOCALHUB = window.__LOCALHUB || {
       supabaseUrl: 'https://rbqidaiyxooxdaresxjj.supabase.co',
       supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJicWlkYWl5eG9veGRhcmVzeGpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzUyMjAsImV4cCI6MjA5NDExMTIyMH0.abCE40AXh8vlIDThHRX-p5w21CrTKh3LvTXbcR41igA'
     };
+    window.__SOKO = window.__LOCALHUB;
   </script>
 </head>
 <body>
-  <header class="site-header"><nav class="site-nav"><a class="brand" href="vendor-admin/index.html">Vendor</a></nav></header>
+  <header class="site-header">
+    <nav class="site-nav">
+      <a class="brand" href="vendor-admin/index.html">Vendor</a>
+      <div class="nav-links">
+        <a href="vendor-admin/products.html">Products</a>
+        <a href="vendor-admin/settings.html">Settings</a>
+        <a href="index.html">Marketplace</a>
+      </div>
+    </nav>
+  </header>
   <main class="site-wrap page-main">
     <h1 class="section-title">Store settings</h1>
-    <p class="text-secondary">Hours JSON, story, WhatsApp, payout phone — keep contract text read-only here.</p>
+    <p class="text-secondary mb-2">Public-facing copy + contact. Contract fields stay unchanged here.</p>
+    <div id="vendor-settings-slot"></div>
   </main>
   <script type="module">
     import { bootVendorSettings } from '../js/pages/vendor-admin.js';

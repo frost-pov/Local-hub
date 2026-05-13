@@ -58,6 +58,18 @@ function escapeHtml(s) {
     .replace(/"/g, '&quot;')
 }
 
+/** Price column is integer cents in DB */
+function formatCents(n) {
+  if (n == null || Number.isNaN(Number(n))) return '—'
+  const v = Number(n)
+  const k = Math.round(v) / 100
+  return `${k.toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} KES`
+}
+
+function isSensitivePlatformKey(key) {
+  return /passkey|secret|password|token/i.test(String(key || ''))
+}
+
 function vendorRowsDemoHtml(rows) {
   if (!rows?.length)
     return '<p class="text-secondary mt-2">No rows returned.</p>'
@@ -280,6 +292,11 @@ export async function bootAdminHome() {
       elApps.textContent = '—'
       elApps.setAttribute('title', 'Preview')
     }
+    const elOrdersDash = document.getElementById('orders-total-count')
+    if (elOrdersDash) {
+      elOrdersDash.textContent = '—'
+      elOrdersDash.setAttribute('title', 'Preview')
+    }
     return
   }
   const { count: pendingUnpub } = await supabase
@@ -302,6 +319,12 @@ export async function bootAdminHome() {
     }
   } else if (elApps)
     elApps.textContent = String(pendAppsResp.count ?? 0)
+
+  const elOrders = document.getElementById('orders-total-count')
+  const { count: orderTotal } = await supabase
+    .from('orders')
+    .select('*', { count: 'exact', head: true })
+  if (elOrders) elOrders.textContent = String(orderTotal ?? 0)
 }
 
 function bindVendorTableActions(main) {
@@ -472,41 +495,244 @@ export async function bootAdminOrders() {
     return
   }
 
-  const { data, error } = await supabase
-    .from('orders')
-    .select('order_ref, status, total_amount, buyer_name, created_at')
-    .order('created_at', { ascending: false })
-    .limit(40)
-  if (error) {
-    main.insertAdjacentHTML(
-      'beforeend',
-      `<p class="text-secondary mt-2">Could not load orders: ${escapeHtml(error.message)}</p>`
-    )
-    return
-  }
-  if (!data?.length) {
-    main.insertAdjacentHTML(
-      'beforeend',
-      '<p class="text-secondary mt-2">No orders yet.</p>'
-    )
-    return
-  }
-  const rows = data
-    .map(
-      (o) => `
-    <tr>
-      <td class="mono">${escapeHtml(o.order_ref)}</td>
-      <td>${escapeHtml(o.status)}</td>
-      <td>${escapeHtml(o.buyer_name || '—')}</td>
-      <td class="mono">${o.total_amount != null ? o.total_amount : '—'}</td>
-      <td>${escapeHtml(o.created_at || '')}</td>
-    </tr>`
-    )
-    .join('')
+  const statuses = [
+    'all',
+    'pending',
+    'payment_initiated',
+    'paid',
+    'confirmed',
+    'preparing',
+    'dispatched',
+    'delivered',
+    'cancelled',
+    'refunded',
+  ]
+
   main.insertAdjacentHTML(
     'beforeend',
-    `<div class="table-wrap mt-3"><table class="admin-table"><thead><tr><th>Ref</th><th>Status</th><th>Buyer</th><th>Total (cents)</th><th>Created</th></tr></thead><tbody>${rows}</tbody></table></div>`
+    `
+    <div class="mt-3" style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:center">
+      <label class="text-secondary text-sm mb-0" for="admin-order-status">Status</label>
+      <select id="admin-order-status" class="input" style="width:auto;min-width:12rem"></select>
+      <button type="button" class="btn btn-secondary btn-sm" id="admin-orders-refresh">Refresh</button>
+    </div>
+    <div id="admin-orders-slot" class="mt-3"></div>
+    <div class="card card-body mt-3">
+      <p class="eyebrow">M-Pesa transactions (latest)</p>
+      <p class="text-secondary text-sm">Populated after STK callbacks write to <code class="mono">mpesa_transactions</code>.</p>
+      <div id="admin-mpesa-slot" class="mt-2"></div>
+    </div>`
   )
+
+  const sel = document.getElementById('admin-order-status')
+  if (sel) {
+    sel.innerHTML = statuses
+      .map((s) => `<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`)
+      .join('')
+  }
+
+  let ordersCache = []
+  let selectedOrderId = null
+
+  async function loadMpesa() {
+    const slot = document.getElementById('admin-mpesa-slot')
+    if (!slot) return
+    slot.innerHTML = '<p class="text-secondary text-sm mb-0">Loading…</p>'
+    const { data, error } = await supabase
+      .from('mpesa_transactions')
+      .select(
+        'id, order_id, phone, amount, status, mpesa_receipt, result_code, created_at'
+      )
+      .order('created_at', { ascending: false })
+      .limit(40)
+    if (error) {
+      slot.innerHTML = `<p class="text-secondary mb-0">${escapeHtml(error.message)}</p>`
+      return
+    }
+    if (!data?.length) {
+      slot.innerHTML =
+        '<p class="text-secondary text-sm mb-0">No M-Pesa rows yet.</p>'
+      return
+    }
+    const body = data
+      .map(
+        (m) => `
+      <tr>
+        <td class="mono text-sm">${escapeHtml(m.created_at || '')}</td>
+        <td>${escapeHtml(m.status)}</td>
+        <td class="mono">${escapeHtml(m.mpesa_receipt || '—')}</td>
+        <td>${formatCents(m.amount)}</td>
+        <td class="mono" style="max-width:6rem;overflow:hidden;text-overflow:ellipsis" title="${escapeHtml(m.order_id || '')}">${escapeHtml((m.order_id || '').slice(0, 8) || '—')}</td>
+      </tr>`
+      )
+      .join('')
+    slot.innerHTML = `
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>When</th><th>Status</th><th>Receipt</th><th>Amount</th><th>Order</th></tr></thead>
+          <tbody>${body}</tbody>
+        </table>
+      </div>`
+  }
+
+  async function loadDetail(orderId, detailEl) {
+    if (!detailEl) return
+    detailEl.innerHTML =
+      '<p class="text-secondary text-sm mb-0">Loading line items…</p>'
+    const [{ data: items, error: itemsErr }, { data: txs, error: txsErr }] =
+      await Promise.all([
+        supabase
+          .from('order_items')
+          .select(
+            'product_title, quantity, unit_price, subtotal, vendor_payout, payout_status'
+          )
+          .eq('order_id', orderId),
+        supabase
+          .from('mpesa_transactions')
+          .select(
+            'status, mpesa_receipt, result_code, amount, phone, created_at'
+          )
+          .eq('order_id', orderId)
+          .order('created_at', { ascending: false })
+          .limit(5),
+      ])
+    const head = txsErr ? '' : txs?.length
+      ? `<p class="eyebrow text-sm mb-1">Payments for this order</p><ul class="mb-3">${txs?.map((t) => `<li class="text-sm">${escapeHtml(t.status)} · ${escapeHtml(t.mpesa_receipt || 'no receipt')} · ${formatCents(t.amount)}</li>`).join('')}</ul>`
+      : '<p class="text-secondary text-sm mb-3">No M-Pesa rows linked to this order id yet.</p>'
+    const itemErrUi = itemsErr
+      ? `<p class="text-secondary">${escapeHtml(itemsErr.message)}</p>`
+      : ''
+    const itemRows =
+      items?.length && !itemsErr
+        ? items
+            .map(
+              (i) => `
+        <tr>
+          <td>${escapeHtml(i.product_title)}</td>
+          <td>${escapeHtml(String(i.quantity))}</td>
+          <td>${formatCents(i.unit_price)}</td>
+          <td>${formatCents(i.subtotal)}</td>
+          <td>${formatCents(i.vendor_payout)}</td>
+          <td>${escapeHtml(i.payout_status)}</td>
+        </tr>`
+            )
+            .join('')
+        : ''
+    detailEl.innerHTML = `
+      ${head}
+      ${itemErrUi}
+      ${
+        itemRows
+          ? `<div class="table-wrap"><table class="admin-table">
+        <thead><tr><th>Product</th><th>Qty</th><th>Unit</th><th>Line</th><th>Vendor net</th><th>Payout</th></tr></thead>
+        <tbody>${itemRows}</tbody></table></div>`
+          : !itemsErr
+            ? '<p class="text-secondary text-sm mb-0">No line items (unexpected if order exists).</p>'
+            : ''
+      }`
+  }
+
+  async function paintOrdersTable() {
+    const slot = document.getElementById('admin-orders-slot')
+    if (!slot) return
+    const st = sel?.value || 'all'
+
+    slot.innerHTML = '<p class="text-secondary mb-0">Loading…</p>'
+    let q = supabase
+      .from('orders')
+      .select(
+        'id, order_ref, status, total_amount, buyer_name, buyer_phone, buyer_email, delivery_address, created_at'
+      )
+      .order('created_at', { ascending: false })
+      .limit(80)
+
+    if (st !== 'all') q = q.eq('status', st)
+    const { data, error } = await q
+    if (error) {
+      slot.innerHTML = `<p class="text-secondary mt-2">Could not load orders: ${escapeHtml(error.message)}</p>`
+      return
+    }
+    ordersCache = data || []
+
+    if (!ordersCache.length) {
+      slot.innerHTML =
+        '<p class="text-secondary mt-2">No orders in this filter yet.</p>'
+      return
+    }
+
+    const rows = ordersCache
+      .map(
+        (o) => `
+      <tr class="admin-order-row" data-order-id="${escapeHtml(o.id)}" style="cursor:pointer">
+        <td class="mono">${escapeHtml(o.order_ref)}</td>
+        <td>${escapeHtml(o.status)}</td>
+        <td>${escapeHtml(o.buyer_name || '—')}</td>
+        <td class="mono text-sm">${escapeHtml(o.buyer_phone || '—')}</td>
+        <td>${formatCents(o.total_amount)}</td>
+        <td class="mono text-sm">${escapeHtml(o.created_at || '')}</td>
+      </tr>`
+      )
+      .join('')
+
+    slot.innerHTML = `
+      <div class="table-wrap">
+        <table class="admin-table"><thead><tr>
+          <th>Ref</th><th>Status</th><th>Buyer</th><th>Phone</th><th>Total</th><th>Created</th>
+        </tr></thead><tbody>${rows}</tbody></table>
+      </div>
+      <p class="text-secondary text-sm mt-2 mb-0">Tip: click a row for line items and linked M-Pesa rows.</p>
+      <div id="admin-order-detail" class="card card-body mt-3 mb-0" style="display:none"></div>`
+
+    const detailHold = document.getElementById('admin-order-detail')
+    slot.querySelectorAll('tr.admin-order-row').forEach((tr) => {
+      tr.addEventListener('click', async () => {
+        const id = tr.getAttribute('data-order-id')
+        if (!id || !detailHold) return
+        selectedOrderId = id
+        const o = ordersCache.find((r) => r.id === id)
+        detailHold.style.display = 'block'
+        detailHold.innerHTML = `
+          <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between;align-items:flex-start">
+            <div>
+              <p class="eyebrow mb-1">Order</p>
+              <p class="mb-1 mono">${escapeHtml(o?.order_ref || '')}</p>
+              <p class="text-secondary text-sm mb-0">${escapeHtml(o?.delivery_address || '')}</p>
+              ${o?.buyer_email ? `<p class="text-secondary text-sm mb-0 mt-1">${escapeHtml(o.buyer_email)}</p>` : ''}
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm" id="admin-order-detail-close">Close</button>
+          </div>
+          <div id="admin-order-detail-body" class="mt-3"></div>`
+        document
+          .getElementById('admin-order-detail-close')
+          ?.addEventListener('click', () => {
+            detailHold.style.display = 'none'
+            selectedOrderId = null
+          })
+        await loadDetail(id, document.getElementById('admin-order-detail-body'))
+      })
+    })
+
+    if (selectedOrderId) {
+      const tr = slot.querySelector(`tr[data-order-id="${selectedOrderId}"]`)
+      if (tr) tr.click()
+      else selectedOrderId = null
+    }
+  }
+
+  await paintOrdersTable()
+  await loadMpesa()
+
+  sel?.addEventListener('change', async () => {
+    selectedOrderId = null
+    await paintOrdersTable()
+  })
+  document
+    .getElementById('admin-orders-refresh')
+    ?.addEventListener('click', async () => {
+      await paintOrdersTable()
+      await loadMpesa()
+      showToast('Orders & M-Pesa refreshed')
+    })
 }
 
 export async function bootAdminPayouts() {
@@ -515,7 +741,9 @@ export async function bootAdminPayouts() {
   injectDemoBanner()
   await hydrateAdminChrome()
   const main = document.querySelector('main.page-main')
-  if (main && ctx.demo) {
+  if (!main) return
+
+  if (ctx.demo) {
     main.insertAdjacentHTML(
       'beforeend',
       `<div class="card card-body mt-3">
@@ -523,7 +751,65 @@ export async function bootAdminPayouts() {
         <p class="text-secondary mb-0">Wire <code class="mono">supabase/functions/payout</code> and schedule triggers for production. No payout data in preview.</p>
       </div>`
     )
+    return
   }
+
+  main.insertAdjacentHTML(
+    'beforeend',
+    `<p class="text-secondary text-sm mb-0">Historical payout batches (<code class="mono">vendor_payouts</code>). Create rows via backend / SQL until an Edge payout job exists.</p>
+    <div id="admin-payouts-slot" class="mt-3"></div>`
+  )
+
+  const slot = document.getElementById('admin-payouts-slot')
+  if (!slot) return
+  slot.innerHTML = '<p class="text-secondary mb-0">Loading…</p>'
+
+  const { data, error } = await supabase
+    .from('vendor_payouts')
+    .select(
+      'id, vendor_id, period_start, period_end, gross_sales, commission_total, net_payout, order_count, status, paid_at, notes, created_at, vendors(name, slug)'
+    )
+    .order('created_at', { ascending: false })
+    .limit(80)
+
+  if (error) {
+    slot.innerHTML = `<p class="text-secondary mb-0">${escapeHtml(error.message)}</p>`
+    return
+  }
+  if (!data?.length) {
+    slot.innerHTML =
+      '<p class="text-secondary mb-0">No payout rows yet. When vendors accrue sales, insert summary rows here or automate via Edge Function.</p>'
+    return
+  }
+
+  const body = data
+    .map((p) => {
+      const v = p.vendors
+      const vname = v?.name || '—'
+      const vslug = v?.slug ? ` <span class="mono text-sm">(${escapeHtml(v.slug)})</span>` : ''
+      return `
+    <tr>
+      <td class="mono text-sm">${escapeHtml(p.created_at || '')}</td>
+      <td>${escapeHtml(vname)}${vslug}</td>
+      <td class="mono text-sm">${escapeHtml(p.period_start || '')} → ${escapeHtml(p.period_end || '')}</td>
+      <td>${formatCents(p.gross_sales)}</td>
+      <td>${formatCents(p.commission_total)}</td>
+      <td><strong>${formatCents(p.net_payout)}</strong></td>
+      <td>${escapeHtml(p.status)}</td>
+      <td class="mono text-sm">${escapeHtml(p.paid_at || '—')}</td>
+    </tr>`
+    })
+    .join('')
+
+  slot.innerHTML = `
+    <div class="table-wrap">
+      <table class="admin-table">
+        <thead><tr>
+          <th>Created</th><th>Vendor</th><th>Period</th><th>Gross</th><th>Commission</th><th>Net</th><th>Status</th><th>Paid</th>
+        </tr></thead>
+        <tbody>${body}</tbody>
+      </table>
+    </div>`
 }
 
 export async function bootAdminSettings() {
@@ -532,7 +818,9 @@ export async function bootAdminSettings() {
   injectDemoBanner()
   await hydrateAdminChrome()
   const main = document.querySelector('main.page-main')
-  if (main && ctx.demo) {
+  if (!main) return
+
+  if (ctx.demo) {
     main.insertAdjacentHTML(
       'beforeend',
       `<div class="card card-body mt-3">
@@ -540,7 +828,107 @@ export async function bootAdminSettings() {
         <p class="text-secondary mb-0">Edit <code class="mono">platform_settings</code> in Supabase (delivery fee, branding). Preview has no remote settings row.</p>
       </div>`
     )
+    return
   }
+
+  main.insertAdjacentHTML(
+    'beforeend',
+    `<p class="text-secondary text-sm mb-0">Values are non-secret platform keys only. Masked fields keep existing secrets until you replace them.</p>
+    <div id="platform-settings-slot" class="mt-3"></div>
+    <p id="platform-settings-status" class="text-secondary text-sm mt-2 mb-0" role="status"></p>`
+  )
+
+  const slot = document.getElementById('platform-settings-slot')
+  const statusEl = document.getElementById('platform-settings-status')
+  if (!slot) return
+
+  async function reload() {
+    slot.innerHTML = '<p class="text-secondary mb-0">Loading…</p>'
+    const { data, error } = await supabase
+      .from('platform_settings')
+      .select('key, value, updated_at')
+      .order('key')
+
+    if (error) {
+      slot.innerHTML = `<p class="text-secondary">${escapeHtml(error.message)}</p>`
+      return
+    }
+    if (!data?.length) {
+      slot.innerHTML =
+        '<p class="text-secondary">No rows. Run <code class="mono">schema.sql</code> seeds or insert keys manually.</p>'
+      return
+    }
+
+    const rows = data
+      .map((row) => {
+        const sens = isSensitivePlatformKey(row.key)
+        const val =
+          sens && row.value
+            ? '•••••••• (stored)'
+            : String(row.value ?? '')
+        const inputType = sens ? 'password' : 'text'
+        const ph = sens ? 'leave blank to keep; type new value to replace' : ''
+        return `
+      <article class="card card-body mb-2" data-platform-key="${escapeHtml(row.key)}">
+        <div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-end;justify-content:space-between">
+          <div style="flex:1;min-width:12rem">
+            <label class="eyebrow" for="${escapeHtml(`pst-${row.key}`)}">${escapeHtml(row.key)}</label>
+            ${
+              row.updated_at
+                ? `<p class="text-muted text-sm mb-1">updated ${escapeHtml(row.updated_at)}</p>`
+                : ''
+            }
+            <input class="input" id="${escapeHtml(`pst-${row.key}`)}"
+              type="${escapeHtml(inputType)}"
+              data-platform-input="${escapeHtml(row.key)}"
+              value="${sens ? '' : escapeHtml(val)}"
+              placeholder="${escapeHtml(ph)}"
+              autocomplete="off"
+            />
+            ${sens ? `<p class="text-muted text-sm mt-1 mb-0">Current value is hidden.${row.value ? ' Enter a new value to rotate.' : ''}</p>` : ''}
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" data-platform-save="${escapeHtml(row.key)}">Save</button>
+        </div>
+      </article>`
+      })
+      .join('')
+
+    slot.innerHTML = rows
+  }
+
+  await reload()
+
+  main.addEventListener('click', async (ev) => {
+    const btn = ev.target.closest('[data-platform-save]')
+    if (!btn || !slot.contains(btn)) return
+    const key = btn.getAttribute('data-platform-save')
+    const input = slot.querySelector(`[data-platform-input="${key}"]`)
+    if (!input || !statusEl || !key) return
+    const raw = input.value.trim()
+    if (!raw && isSensitivePlatformKey(key)) {
+      statusEl.textContent = 'Skipped (unchanged)'
+      return
+    }
+    if (!raw && !isSensitivePlatformKey(key)) {
+      showToast('Value cannot be empty')
+      return
+    }
+    btn.disabled = true
+    statusEl.textContent = `Saving ${key}…`
+    const { error } = await supabase
+      .from('platform_settings')
+      .update({ value: raw })
+      .eq('key', key)
+    btn.disabled = false
+    if (error) {
+      statusEl.textContent = error.message
+      showToast(error.message)
+      return
+    }
+    statusEl.textContent = `Saved ${key}`
+    showToast('Saved')
+    await reload()
+  })
 }
 
 function catalogStats() {
@@ -814,6 +1202,58 @@ export async function bootAdminMonitoring() {
       <div class="card card-body"><p class="eyebrow">Demo vendors</p><p class="section-title" style="font-size:1.75rem;margin:0">${placeholderVendors.length}</p><p class="text-secondary text-sm mt-1 mb-0">fashion ${stats.vendorsByCat.fashion || 0} · groceries ${stats.vendorsByCat.groceries || 0} · services ${stats.vendorsByCat.services || 0} · household ${stats.vendorsByCat.household || 0}</p></div>
       <div class="card card-body"><p class="eyebrow">Demo products</p><p class="section-title" style="font-size:1.75rem;margin:0">${placeholderProducts.length}</p><p class="text-secondary text-sm mt-1 mb-0">mixed goods &amp; services listings</p></div>
       <div class="card card-body"><p class="eyebrow">By category (products)</p><p class="mb-0 text-secondary">fashion ${stats.productsByCat.fashion}, groceries ${stats.productsByCat.groceries}, services ${stats.productsByCat.services}, household ${stats.productsByCat.household}</p></div>`
+  }
+
+  const elLive = document.getElementById('mon-live-stats')
+  if (elLive && configured && !shouldUsePlaceholders()) {
+    elLive.innerHTML =
+      '<div class="card card-body" style="grid-column:1/-1"><p class="text-secondary mb-0">Loading live row counts…</p></div>'
+    const head = async (table, filter) => {
+      let q = supabase.from(table).select('*', { count: 'exact', head: true })
+      if (filter) q = filter(q)
+      const { count, error } = await q
+      return error ? null : count
+    }
+    const [
+      vc,
+      pc,
+      oc,
+      pro,
+      papp,
+      ppend,
+      txc,
+      payc,
+    ] = await Promise.all([
+      head('vendors'),
+      head('products'),
+      head('orders'),
+      head('profiles'),
+      head('vendor_applications'),
+      head('vendor_applications', (q) => q.eq('status', 'pending')),
+      head('mpesa_transactions'),
+      head('vendor_payouts'),
+    ])
+    const cell = (label, val) =>
+      val == null
+        ? `<div class="card card-body"><p class="eyebrow">${escapeHtml(label)}</p><p class="section-title mb-0" style="font-size:1.5rem">—</p><p class="text-muted text-sm mt-1 mb-0">RLS / network</p></div>`
+        : `<div class="card card-body"><p class="eyebrow">${escapeHtml(label)}</p><p class="section-title mb-0" style="font-size:1.75rem">${escapeHtml(String(val))}</p></div>`
+
+    elLive.innerHTML = `
+      ${cell('Vendors', vc)}
+      ${cell('Products', pc)}
+      ${cell('Orders', oc)}
+      ${cell('Profiles', pro)}
+      ${cell('Applications (pending)', ppend)}
+      ${cell('Applications (all)', papp)}
+      ${cell('M-Pesa rows', txc)}
+      ${cell('Payout batches', payc)}
+    `
+  } else if (elLive) {
+    elLive.innerHTML = `
+      <div class="card card-body" style="grid-column:1/-1">
+        <p class="eyebrow">Live counts</p>
+        <p class="text-secondary mb-0">Shown when anon URL + JWT look valid <em>and</em> demo mode is off (<code class="mono">window.__LOCALHUB</code> production keys).</p>
+      </div>`
   }
 
   const elPing = document.getElementById('mon-ping-status')

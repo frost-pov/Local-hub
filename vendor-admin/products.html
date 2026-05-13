@@ -19,17 +19,28 @@
   <title>Vendor · Products</title>
   <link rel="stylesheet" href="css/style.css" />
   <script>
-    window.__SOKO = window.__SOKO || {
+    window.__LOCALHUB = window.__LOCALHUB || {
       supabaseUrl: 'https://rbqidaiyxooxdaresxjj.supabase.co',
       supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJicWlkYWl5eG9veGRhcmVzeGpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg1MzUyMjAsImV4cCI6MjA5NDExMTIyMH0.abCE40AXh8vlIDThHRX-p5w21CrTKh3LvTXbcR41igA'
     };
+    window.__SOKO = window.__LOCALHUB;
   </script>
 </head>
 <body>
-  <header class="site-header"><nav class="site-nav"><a class="brand" href="vendor-admin/index.html">Vendor</a></nav></header>
+  <header class="site-header">
+    <nav class="site-nav">
+      <a class="brand" href="vendor-admin/index.html">Vendor</a>
+      <div class="nav-links">
+        <a href="vendor-admin/products.html">Products</a>
+        <a href="vendor-admin/settings.html">Settings</a>
+        <a href="index.html">Marketplace</a>
+      </div>
+    </nav>
+  </header>
   <main class="site-wrap page-main">
     <h1 class="section-title">Products</h1>
-    <p class="text-secondary">List/create/edit SKUs — use `calcCommission` in JS for the live “you earn” preview (CONTEXT §11).</p>
+    <p class="text-secondary mb-2">Prices are stored in cents. Toggle listings without deleting rows.</p>
+    <div id="vendor-products-slot"></div>
   </main>
   <script type="module">
     import { bootVendorProducts } from '../js/pages/vendor-admin.js';
