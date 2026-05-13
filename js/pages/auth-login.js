@@ -6,26 +6,45 @@ import { normalizeNextUrl } from '../core/paths.js'
 import { loadInto } from '../ui/components.js'
 
 export async function bootLogin() {
-  await loadInto('#nav-slot', '/partials/nav.html')
-  await loadInto('#footer-slot', '/partials/footer.html')
-
   const params = new URLSearchParams(location.search)
   const nextHref = normalizeNextUrl(params.get('next') || '')
 
+  const errEl = document.getElementById('login-err')
+
   document.getElementById('login-form')?.addEventListener('submit', async (e) => {
     e.preventDefault()
+    if (errEl) errEl.textContent = ''
     const email = document.getElementById('email')?.value?.trim()
     const password = document.getElementById('password')?.value || ''
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data: signData, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
     if (error) {
-      document.getElementById('login-err').textContent = error.message
+      if (errEl) errEl.textContent = error.message
       return
     }
 
-    await supabase.auth.getSession()
-    await supabase.auth.getUser()
+    // Do not call getUser() here: it re-validates over the network and can throw
+    // / fail on transient errors even when sign-in already returned a session.
+    if (signData?.session) {
+      window.location.replace(nextHref)
+      return
+    }
 
-    window.location.replace(nextHref)
+    const { data: sess } = await supabase.auth.getSession()
+    if (sess?.session) {
+      window.location.replace(nextHref)
+      return
+    }
+
+    if (errEl) {
+      errEl.textContent =
+        'Signed in but no session was stored. Allow cookies / site data for this site and try again.'
+    }
   })
+
+  await loadInto('#nav-slot', '/partials/nav.html')
+  await loadInto('#footer-slot', '/partials/footer.html')
 }
